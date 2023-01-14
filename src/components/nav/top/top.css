@@ -1,0 +1,19 @@
+.topbar {
+    background: #106eea;
+    height: 40px;
+    font-size: 14px;
+    z-index: 998;
+    transition: all 0.3s;
+    color: #fff;
+    padding: 0;
+}
+
+.contact-info span {
+  font-style: normal;
+  color: #fff;
+    margin-left: 20px;
+}
+.contact-info .text-white {
+  padding-left: 5px;
+}
+
