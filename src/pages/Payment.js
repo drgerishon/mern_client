@@ -1,0 +1,25 @@
+import React from 'react';
+import {loadStripe} from "@stripe/stripe-js";
+import {Elements} from "@stripe/react-stripe-js";
+import '../stripe.css'
+import StripeCheckout from "../components/StripeCheckout";
+
+
+const promise = loadStripe(process.env.REACT_APP_STRIPE_KEY)
+const Payment = () => {
+    return (
+        <div className='container p-5 text-center'>
+            <div className="row">
+                <h5>Complete your Purchase</h5>
+                <Elements stripe={promise}>
+                    <div className="col-md-8 offset-md-2">
+                        <StripeCheckout/>
+                    </div>
+                </Elements>
+            </div>
+
+        </div>
+    );
+};
+
+export default Payment;
