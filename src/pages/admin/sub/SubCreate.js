@@ -29,7 +29,6 @@ const SubCreate = () => {
         getCategories()
             .then(r => {
                 setCategories(r.data)
-
             })
             .catch(e => {
                 console.log(e)

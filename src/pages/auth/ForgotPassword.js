@@ -140,7 +140,7 @@ const ForgotPassword = (props) => {
                     {!successful &&
                     <div className="col-12">
                         <MDBInput
-                            label='Email'
+                            label='RegisterWizard'
                             disabled={loading}
                             id='email'
                             type='email'

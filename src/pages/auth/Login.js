@@ -277,18 +277,25 @@ const Login = ({swal}) => {
 
                 </>
 
-                {message && (
-                    <div className="col-12 mb-3">
-                        <div
-                            className={"text-danger "}
-                            role="alert"
-                        >
-                            {message}
+                 {
+                        message && Array.isArray(message) ? message.map(m => {
+                            return <div className="col-12 " key={m.param}>
+                                <div
+                                    className={"text-danger "}
+                                    role="alert"
+                                >
+                                    {m.msg}
+                                </div>
+                            </div>
+                        }) : <div className="col-12 ">
+                            <div
+                                className={ "text-danger "}
+                                role="alert"
+                            >
+                                {message}
+                            </div>
                         </div>
-                    </div>
-                )}
-
-
+                    }
             </form>
 
         );

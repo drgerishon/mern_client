@@ -10,14 +10,13 @@ const RatingModal = ({children, show, user, handleStarSubmit,modalTitle, handleS
 
 
     return (
-        <>
-
+        <button className='btn btn-primary btn-sm'>
             <div onClick={handleShow}>
                 <Icon
 
                     icon="ic:sharp-star-border"
-                    className='text-danger'
-                    fontSize={40}/> {user ? 'Leave a rating' : 'login to rate'}
+                    className=''
+                    fontSize={25}/> {user ? 'Leave a rating' : 'login to rate'}
             </div>
 
             <Modal show={show} onHide={handleClose}>
@@ -36,7 +35,7 @@ const RatingModal = ({children, show, user, handleStarSubmit,modalTitle, handleS
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </>
+        </button>
     );
 };
 

@@ -2,6 +2,7 @@
 .SidebarListItem {
     border: none !important;
     padding: 0;
+    width: 100%;
     list-style: none;
     margin-bottom: 5px;
 }
@@ -12,9 +13,9 @@
     align-items: center !important;
     font-size: 15px !important;
     font-weight: 600 !important;
-    color: #294a70 !important;
+    color: var(--color-default)!important;
     transition: 0.3s !important;
-    background: #f6f9ff !important;
+    background: transparent;
     padding: 10px 15px !important;
     border-radius: 4px !important;
 }
@@ -23,23 +24,24 @@
 .NavLinkIcon {
     font-size: 16px;
     margin-right: 10px;
-    color: #4154f1;
+    color: #f90
 }
 
 
 .NavLink:hover, .NavLink.active {
-    color: #4154f1;
-    background: #ededf1;
+    color: #f90;
+    /*background:#f90*/
 }
 
 .ChevronDown {
+    font-size: 20px!important;
     margin-right: 0;
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 .Rotate {
     transform: rotate(180deg);
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 .NavContent {

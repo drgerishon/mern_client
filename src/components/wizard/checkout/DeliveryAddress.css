@@ -1,0 +1,56 @@
+
+.address-form .search {
+    position: relative;
+}
+
+.address-form .search button {
+    position: absolute;
+    top: 50%;
+    font-size: 20px;
+    transform: translateY(-50%);
+}
+
+
+.address-form .search button {
+    right: 20px;
+    left: auto;
+    border: none;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    color: #333;
+}
+
+.address-form  .show-address p span{
+    color: var(--color-yellow);
+    font-weight: bold;
+        font-size: 16px;
+
+}
+
+
+.address-form .search button:hover {
+    color: #294a70;
+}
+
+.address-form .search .myInput {
+    height: 44px;
+    font-size: 20px;
+
+}
+
+/*.address-form .address {*/
+/*    margin-top: 30px;*/
+/*    font-size: 24px;*/
+/*}*/
+
+/*.address-form .address p {*/
+/*    margin-bottom: 15px;*/
+/*    margin-top: 0;*/
+/*}*/
+
+/*.address-form .address p span {*/
+/*    opacity: .8;*/
+/*}*/

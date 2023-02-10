@@ -18,16 +18,18 @@ export const extractAddress = (place) => {
         state: "",
         lat: '',
         streetAddress: place.formatted_address,
-        googlePlaceID: place.place_id,
+        googlePlaceId: place.place_id,
         lng: '',
         zipCode: "",
         country: "",
+        name:'',
         plain() {
             const city = this.city ? this.city + ", " : "";
             const zipCode = this.zipCode ? this.zipCode + ", " : "";
             const state = this.state ? this.state + ", " : "";
             return city + zipCode + state + this.country;
-        }
+        },
+
     }
 
     if (!Array.isArray(place?.address_components)) {
@@ -43,6 +45,8 @@ export const extractAddress = (place) => {
             address.lng = place.geometry.location.lng();
         }
     }
+
+
 
 
     place.address_components.forEach(component => {
@@ -73,3 +77,5 @@ export const extractAddress = (place) => {
 
     return address;
 }
+
+

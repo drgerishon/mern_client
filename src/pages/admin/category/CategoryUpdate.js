@@ -13,12 +13,10 @@ const CategoryUpdate = () => {
     const [loading, setLoading] = useState('')
     const {user} = useSelector((state) => state.auth);
     const navigate = useNavigate();
-
     let {slug} = useParams();
     useEffect(() => {
         getCategory(slug)
             .then(r => {
-
                 setName(r.data.category.name)
             })
             .catch(e => {

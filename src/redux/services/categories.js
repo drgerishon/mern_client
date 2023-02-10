@@ -27,6 +27,9 @@ export const createCategory = async (category, token) => await axios.post(`${API
     }
 });
 
-export const getCategorySubs = async (_id) => await axios.get(`${API_URL}/category/subs/${_id}`);
+export const getCategorySubs = async (_id) => {
+    console.log('Here',_id)
+    return await axios.get(`${API_URL}/category/subs/${_id}`);
+};
 
 

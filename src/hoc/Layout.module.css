@@ -1,6 +1,7 @@
 .Main {
-  padding: 20px 30px;
-  transition: all 0.3s;
+    padding: 20px 30px;
+    transition: all 0.3s;
+
 }
 
 @media (min-width: 1200px) {

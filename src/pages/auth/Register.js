@@ -1,39 +1,26 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import Input from "../../ui/input/Input";
-import {MDBBtn, MDBCheckbox, MDBSpinner} from "mdb-react-ui-kit";
+import {MDBBtn} from "mdb-react-ui-kit";
 import {Link, Navigate} from "react-router-dom";
 import {preSignup} from "../../redux/slices/auth";
-import {clearMessage} from "../../redux/slices/message";
+import {clearMessage, setMessage} from "../../redux/slices/message";
 import {checkValidity, updateObject} from "../../common/Utility";
-import {toast} from "react-toastify";
+import {withSwal} from "react-sweetalert2";
+import Progress from "../../components/progress/progress";
+import Success from "../../ui/success/Success";
 
-const Register = () => {
+
+const Register = ({swal}) => {
     const initialValues = {
         registrationForm: {
-            name: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    name: 'name',
-                    required: true,
-                    label: 'Your Name'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                validationMessage: [],
-                valid: false,
-                touched: false
-            },
             email: {
                 elementType: 'input',
                 elementConfig: {
                     type: 'email',
                     name: 'email',
                     required: true,
-                    label: 'Your Email'
+                    label: 'Email*'
                 },
                 value: '',
                 validation: {
@@ -43,13 +30,60 @@ const Register = () => {
                 valid: false,
                 touched: false
             },
+            firstName: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    name: 'firstName',
+                    required: true,
+                    label: 'First name*'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                validationMessage: [],
+                valid: false,
+                touched: false
+            },
+            middleName: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    name: 'middleName',
+                    label: 'Other names'
+                },
+                value: '',
+                validation: {
+                    required: false
+                },
+                validationMessage: [],
+                valid: true,
+                touched: false
+            },
+            surname: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    name: 'surname',
+                    required: true,
+                    label: 'Surname*'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                validationMessage: [],
+                valid: false,
+                touched: false
+            },
             phone: {
                 elementType: 'input',
                 elementConfig: {
                     type: 'tel',
                     name: 'phone',
                     required: true,
-                    label: 'Your phone number'
+                    label: 'Phone number*'
                 },
                 value: '',
                 validation: {
@@ -65,7 +99,7 @@ const Register = () => {
                     type: 'password',
                     required: true,
                     name: 'password',
-                    label: 'Your password'
+                    label: 'Choose password*'
                 },
                 value: '',
                 validation: {
@@ -84,7 +118,7 @@ const Register = () => {
                     type: 'password',
                     name: 'password1',
                     required: true,
-                    label: 'Confirm password'
+                    label: 'Confirm password*'
                 },
                 value: '',
                 validation: {
@@ -95,6 +129,40 @@ const Register = () => {
                 valid: false,
                 touched: false
             },
+            gender: {
+                elementType: 'select',
+                elementConfig: {
+                    options: [
+                        {value: 'def', display: 'Select your gender'},
+                        {value: 'male', display: 'Male'},
+                        {value: 'female', display: 'Female'},
+                        {value: 'intersex', display: 'Intersex'},
+                        {value: 'undisclosed', display: 'Prefer not to say'},
+                    ]
+                },
+                value: 'def',
+                validation: {
+                    required: true
+                },
+                validationMessage: [],
+                valid: false,
+                touched: false
+            },
+            // dob: {
+            //     elementType: 'date',
+            //     elementConfig: {
+            //         name: 'dob',
+            //         dateFormat: "MM/dd/yyyy",
+            //         required: true,
+            //     },
+            //     value: new Date(),
+            //     validation: {
+            //         isDate: true
+            //     },
+            //     validationMessage: [],
+            //     valid: false,
+            //     touched: false
+            // },
             terms: {
                 elementType: 'checkbox',
                 elementConfig: {
@@ -105,6 +173,7 @@ const Register = () => {
                 },
                 value: false,
                 validation: {
+                    // required: true,
                     isTerms: true,
 
                 },
@@ -112,9 +181,12 @@ const Register = () => {
                 valid: false,
                 touched: false
             },
+
+
         },
         formIsValid: false
     }
+
 
     const [values, setValues] = useState(initialValues);
     const [successful, setSuccessful] = useState(false);
@@ -122,18 +194,34 @@ const Register = () => {
     const {isLoggedIn} = useSelector((state) => state.auth);
     const {message} = useSelector((state) => state.message);
     const dispatch = useDispatch();
+    const [page, setPage] = useState(0);
+    const [sliceStart, setSliceStart] = useState(0)
+    // const [sliceStart, setSliceStart] = useState(8)
+    const [sliceNumber, setSliceNumber] = useState(1)
+    // const [sliceNumber, setSliceNumber] = useState(9)
+    const [errored, setErrored] = useState(false)
+    const [showForm, setShowForm] = useState(true)
+
 
     useEffect(() => {
         dispatch(clearMessage());
     }, [dispatch]);
 
 
+    const toggleActive = () => {
+        console.log('')
+
+    };
+
     const handleChange = (event, inputIdentifier, config) => {
-
-
-        let value = event.target.value
-        if (inputIdentifier === 'terms') {
+        dispatch(setMessage(null))
+        let value
+        if (inputIdentifier === 'dob') {
+            value =event
+        } else if (inputIdentifier === 'terms') {
             value = event.target.checked
+        } else {
+            value = event.target.value
         }
 
         const updatedFormElement = updateObject(values.registrationForm[inputIdentifier], {
@@ -141,13 +229,12 @@ const Register = () => {
             valid: checkValidity(value, values.registrationForm[inputIdentifier], values.registrationForm.password.value),
             touched: true
         });
-        console.log('mene',updatedFormElement)
+
 
         const updatedRegistrationForm = updateObject(values.registrationForm, {
             [inputIdentifier]: updatedFormElement
         });
 
-         // console.log(' registration', updatedRegistrationForm )
 
         let formIsValid = true;
 
@@ -163,30 +250,83 @@ const Register = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
+
         setSuccessful(false);
         setLoading(true)
+        setErrored(false)
         const formData = {};
         for (let formElementIdentifier in values.registrationForm) {
             formData[formElementIdentifier] = values.registrationForm[formElementIdentifier].value;
         }
 
-
         dispatch(preSignup(formData))
             .unwrap()
             .then(() => {
                 setSuccessful(true);
-                toast.success('Signup email sent')
-                setLoading(false)
-                // setValues({registrationForm: updatedRegistrationForm, formIsValid: false});
+                setErrored(false)
             })
             .catch(() => {
                 setSuccessful(false);
-                toast.error('Try again')
-                setLoading(false)
-                // setValues({registrationForm: updatedRegistrationForm, formIsValid: false});
+                setValues({...values, formIsValid: false})
+                setErrored(true)
             });
 
     };
+    if (errored && message) {
+        console.log(values.registrationForm.terms.value)
+        swal.fire({
+            text: message,
+            icon: 'error',
+            didOpen: () => {
+                setLoading(false);
+                setShowForm(false)
+
+            },
+            didClose: () => {
+                setShowForm(true)
+
+                dispatch(clearMessage())
+            }
+        }).then(result => {
+            setErrored(false)
+            dispatch(clearMessage())
+
+
+        }).catch(error => {
+            dispatch(clearMessage())
+            setSuccessful(false)
+            setShowForm(false)
+            setLoading(false);
+
+        });
+    }
+
+    if (successful && message) {
+        swal.fire({
+            text: message,
+            icon: 'success',
+            didOpen: () => {
+                setLoading(false);
+                setShowForm(false)
+
+            },
+            didClose: () => {
+                setShowForm(true)
+                setErrored(false)
+                dispatch(clearMessage())
+
+            }
+        }).then(result => {
+            dispatch(clearMessage())
+
+
+        }).catch(error => {
+            dispatch(clearMessage())
+            setSuccessful(false)
+            setShowForm(false)
+            setLoading(false);
+        });
+    }
 
     const formElementsArray = [];
 
@@ -198,25 +338,62 @@ const Register = () => {
     }
 
 
+    function disabledCheck() {
+        let disabled = false
+        if (page === 3 && !values.formIsValid) {
+            disabled = true
+        }
+        if ((page === 1) && (
+            !values.registrationForm.firstName.value ||
+            !values.registrationForm.surname.value ||
+            !values.registrationForm.phone.value)) {
+            disabled = true
+        }
+        if ((page === 2) && (
+            (!values.registrationForm.password.value || !values.registrationForm.password1.value) ||
+            (values.registrationForm.password1.value.trim() !== values.registrationForm.password.value.trim())
+        )) {
+            disabled = true
+        }
+        if (page === 3 && (!values.formIsValid)) {
+            disabled = true
+        }
+        if (errored) {
+            disabled = true
+        }
+
+
+        return disabled
+    }
+
+
     const signupForm = () => {
         return (
             <form className='row g-3' onSubmit={handleSubmit}>
-
+                <div className='col-12 '>
+                    <Progress page={page}/>
+                </div>
+                <div className='col-12 mb-3'>
+                    {successful && <Success/>}
+                </div>
                 {
                     !successful && (
                         <>
                             {
-
-                                formElementsArray.map(({config, id}) => {
+                                formElementsArray.slice(sliceStart, sliceNumber).map(({config, id}) => {
                                     let feedback = ''
-                                    Array.isArray(message) && message && message.map(m => {
-                                        if (m.param === id) return feedback = m.msg
-                                        return feedback = ''
-                                    })
+                                    message && Array.isArray(message) && message.map(m => {
+                                        if (m.param === id) {
+                                            return feedback = m.msg
+                                        } else {
+                                            return feedback = m.msg
+                                        }
 
+                                    })
                                     return <Input
                                         key={id}
                                         id={id}
+
                                         feedback={feedback}
                                         className='col-12 '
                                         elementType={config.elementType}
@@ -232,46 +409,94 @@ const Register = () => {
                             }
 
 
-                            <div className='col-12'>
-                                <MDBBtn
-                                    type='submit'
-                                    className='btn btn-primary  w-100'
-                                    disabled={!values.formIsValid || loading}>
-                                    {loading ? <>
-                                        <MDBSpinner size='sm' role='status' tag='span' className='me-2'/>
-                                        Loading...
-                                    </> : 'Submit form'}
-                                </MDBBtn>
+                            <div className='col-12 mb-3'>
+                                {page === 0 && <MDBBtn
+                                    type='button'
+                                    onClick={() => {
+                                        if (page === 0) {
+                                            setPage((currPage) => currPage + 1);
+                                            setSliceStart((currNumber) => currNumber + 1);
+                                            setSliceNumber((currNumber) => currNumber + 4);
+                                            toggleActive()
+                                        }
+                                    }}
+                                    className='btn btn-primary w-100'
+                                    disabled={!values.registrationForm.email || !values.registrationForm.email.valid}>
+                                    Next
+                                </MDBBtn>}
+
+                                {page > 0 && <div className="row">
+                                    <div className="col-6">
+                                        <MDBBtn
+                                            type='button'
+                                            onClick={() => {
+                                                if (page === 1) {
+                                                    setPage((currPage) => currPage - 1);
+                                                    setSliceStart((currNumber) => currNumber - 1);
+                                                    setSliceNumber((currNumber) => currNumber - 4);
+                                                    toggleActive()
+                                                } else if (page === 2) {
+                                                    setPage((currPage) => currPage - 1);
+                                                    setSliceStart((currNumber) => currNumber - 4);
+                                                    setSliceNumber((currNumber) => currNumber - 2);
+
+                                                } else if (page === 3) {
+                                                    setPage((currPage) => currPage - 1);
+                                                    setSliceStart((currNumber) => currNumber - 2);
+                                                    setSliceNumber((currNumber) => currNumber - 3);
+                                                }
+                                            }}
+                                            className='btn btn-primary w-100'
+                                            disabled={page === 0 || !values.registrationForm.email || !values.registrationForm.email.valid}>
+                                            Previous
+                                        </MDBBtn>
+                                    </div>
+                                    <div className="col-6">
+                                        <MDBBtn
+                                            type={page === 3 ? "submit" : "button"}
+                                            onClick={(event) => {
+                                                if (page === 1) {
+                                                    setPage((currPage) => currPage + 1);
+                                                    setSliceStart((currNumber) => currNumber + 4);
+                                                    setSliceNumber((currNumber) => currNumber + 2);
+                                                    toggleActive()
+                                                } else if (page === 2) {
+                                                    setPage((currPage) => currPage + 1);
+                                                    setSliceStart((currNumber) => currNumber + 2);
+                                                    setSliceNumber((currNumber) => currNumber + 3);
+
+                                                } else {
+                                                    handleSubmit(event)
+                                                }
+
+
+                                            }}
+                                            className={'btn btn-primary w-100'}
+                                            disabled={disabledCheck()}>
+                                            {page === 3 ? `${loading ? 'Please wait' : 'Submit'}` : 'Next'}
+                                        </MDBBtn>
+                                    </div>
+
+
+                                </div>}
                             </div>
-                            <div className="col-12">
-                                <p className="small mb-0">Already have an account?
-                                    <Link to="/auth/login"> {' '} Log in</Link>
-                                </p>
-                            </div>
+
 
                         </>
                     )
                 }
-                {message && <>
-                    <div className="col-12 mb-3">
-                        <div
-                            className={successful ? "text-success" : "text-danger "}
-                            role="alert"
-                        >
-                            {message}
+                {
+                    message && Array.isArray(message) ? message.map(m => {
+                        return <div className="col-12  alert alert-danger py-2 mx-2" key={m.param} role="alert">
+                            {m.msg}
                         </div>
+                    }) : message && <div className={`col-12 alert alert-${successful ? 'success' : 'danger'} py-2`}
+                                         role='alert'>
+
+                        {message}
+
                     </div>
-
-                    <div className='col-12'>
-                        <Link to="/">
-                            <MDBBtn className='btn btn-secondary  w-100'>
-                                Back to Home
-                            </MDBBtn>
-                        </Link>
-                    </div>
-
-                </>}
-
+                }
 
             </form>
         );
@@ -282,17 +507,42 @@ const Register = () => {
 
         return (
             <>
-                <div className="pt-4 pb-2">
-                    <h5 className="card-title text-center pb-0 fs-4">{message ? 'Check your email address' : 'Account opening '}</h5>
-                    <p className="text-center ">
-                        {message ? 'Activation link send to the email provided' : 'Fill the form to provide your details'}
+                {showForm && (
+                    <>
+                        <div className="pt-4 pb-2">
+                            <h5 className="card-title text-center pb-0 fs-4">{successful ? 'Almost done!' : 'Account opening'}</h5>
+
+                            <p className="text-center ">
+                                {successful ?
+                                    'Check your email and follow the instructions to complete registration process'
+                                    :
+                                    'Provide your details to open an account'
+                                }
+                            </p>
+
+                        </div>
+                        {signupForm()}
+                    </>
+                )}
+
+                <div className='card-footer'>
+                    <p className="small mb-3">Already have an account?
+                        <Link to="/auth/login"> {' '} Log in</Link>
                     </p>
+
+
+                    <p className="mb-0 text-muted" style={{fontSize: '10px'}}>For further support, you may
+                        visit the Help Center
+                        or contact our customer service
+                        team.
+                    </p>
+
+
                 </div>
-                {signupForm()}
             </>
 
         );
     }
 }
 
-export default Register;
+export default withSwal(Register);

@@ -6,8 +6,8 @@ import Input from "../../ui/input/Input";
 import {MDBBtn, MDBSpinner} from "mdb-react-ui-kit";
 import {checkValidity, updateObject} from "../../common/Utility";
 import {withSwal} from "react-sweetalert2";
-import {preSignup, resetPassword} from "../../redux/slices/auth";
-import {toast} from "react-toastify";
+import {resetPassword} from "../../redux/slices/auth";
+
 
 const PasswordResetForm = ({swal}) => {
 

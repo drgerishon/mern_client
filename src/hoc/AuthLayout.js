@@ -6,10 +6,10 @@ import {useSelector} from "react-redux";
 const AuthLayout = ({login, password, register}) => {
     const {message} = useSelector((state) => state.message);
     return (
-        <main>
+        <main className={classes.Wrapper}>
             <div className="container">
                 <section
-                    className="section  min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+                    className={` section min-vh-100 d-flex flex-column align-items-center justify-content-center py-4 `}>
                     <div className="container">
                         <div className="row justify-content-center">
                             <div

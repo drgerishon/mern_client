@@ -46,7 +46,7 @@ const RegisterComplete = () => {
         dispatch(signup({token}))
             .unwrap()
             .then(() => {
-                navigate("/login");
+                navigate("/auth/login");
             })
             .catch(() => {
                 setValues({...values, loading: false})

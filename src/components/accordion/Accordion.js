@@ -7,7 +7,7 @@ import useToggle from "../../hooks/useToggle";
 import {Icon} from '@iconify/react';
 import {Link} from "react-router-dom";
 
-function Accordion2({title, eventKey, icon, accList}) {
+function Accordion2({title, eventKey, children, icon, accList}) {
 
     const [showChevron, toggleChevron] = useToggle()
     let chevronClass = [classes.ChevronDown, classes.NavLinkIcon, ' ms-auto']
@@ -30,23 +30,28 @@ function Accordion2({title, eventKey, icon, accList}) {
     return (
         <Accordion as='li'
                    className={`${classes.SidebarListItem} nav-item`}
-                   defaultActiveKey={['0', '1', '2', '3']}
+                   defaultActiveKey={['0', '1', '2', '3', '4']}
                    alwaysOpen>
             <CustomToggle eventKey={eventKey}>
-                <Icon icon="dashicons:category" className={classes.NavLinkIcon}/> <span>{title}</span>
+                {icon && <Icon icon="dashicons:category" className={classes.NavLinkIcon}/>}
+                <span>{title}</span>
                 <Icon icon="bx:chevron-down" className={chevronClass.join(' ')}/>
             </CustomToggle>
 
             <Accordion.Collapse eventKey={eventKey} as='ul' className={classes.NavContent}>
                 <>
-                    {accList.map((acc, i) => {
-                        return <li className={`${classes.SidebarListItem}  nav-item`} key={i}>
-                            <Link href={'/'} className={`${classes.NavContentLink}`}>
-                                <Icon icon="material-symbols:circle-outline" className={classes.NavContentIcon}/>
-                                <span>{acc.title}</span>
-                            </Link>
-                        </li>
-                    })}
+                    {
+                        accList ? accList.map((acc, i) => {
+                            return <li className={`${classes.SidebarListItem}  nav-item`} key={i}>
+                                <Link href={'/'} className={`${classes.NavContentLink}`}>
+                                    <Icon icon="material-symbols:circle-outline" className={classes.NavContentIcon}/>
+                                    <span>{acc.title}</span>
+                                </Link>
+                            </li>
+                        }) : <>
+                            {children}
+                        </>
+                    }
                 </>
             </Accordion.Collapse>
         </Accordion>

@@ -6,7 +6,6 @@ import useToggle from "../hooks/useToggle";
 import classes from './Layout.module.css'
 import {Outlet} from "react-router-dom";
 
-
 const Layout = () => {
     const [open, toggleClosed] = useToggle();
     const [scrolled, setScrolled] = useState(false);

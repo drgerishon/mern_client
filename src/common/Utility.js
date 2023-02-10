@@ -11,22 +11,22 @@ export const updateObject = (oldObject, updatedProperties) => {
 
 export const checkValidity = (value, field, p) => {
 
-
     let isValid = true;
-    if (!field.validation) {
+    if (!field.validation || !field.validation.required) {
         return true;
     }
 
     if (field.validation.required === true) {
         let errors = [];
-        if (value.trim() === '') {
+        if (value.trim() === '' || value === false) {
             errors.push("This field is mandatory");
         }
+
         if (errors.length > 0) {
             field.validationMessage = errors
             return false;
         }
-        isValid = value.trim() !== '' && isValid;
+        isValid = (value.trim() !== '') && isValid;
     }
     if (field.validation.required === false) {
         isValid = true;
@@ -92,7 +92,31 @@ export const checkValidity = (value, field, p) => {
         }
         isValid = value === true && isValid
     }
+    if (field.validation.isDate === true) {
+        let errors = [];
+        if (value === null || value === false) {
+            errors.push("This field is mandatory");
+        }
 
+        if (errors.length > 0) {
+            field.validationMessage = errors
+            return false;
+        }
+        isValid = (value !== null) && isValid;
+    }
+
+    if (field.validation.isPhoneNumber) {
+        let errors = [];
+        const pattern = /^(?:\+254|0)[17]\d{8}$/;
+        if (!pattern.test(value)) {
+            errors.push("");
+        }
+        if (errors.length > 0) {
+            field.validationMessage = errors
+            return false;
+        }
+        isValid = pattern.test(value) && isValid;
+    }
 
     // if (rules.isNumeric) {
     //     const pattern = /^\d+$/;

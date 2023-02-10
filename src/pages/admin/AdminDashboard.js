@@ -10,9 +10,9 @@ const AdminDashboard = () => {
     const logOut = useCallback(() => {
         dispatch(logout());
         navigate('/auth/login')
-    }, [dispatch,navigate]);
+    }, [dispatch, navigate]);
 
-    const {isIdle} = useIdle({onIdle: logOut, idleTime: 5})
+    const {isIdle} = useIdle({onIdle: logOut, idleTime: 1.25})
     return (
         <div>
             <h5>Admin dashboard</h5>

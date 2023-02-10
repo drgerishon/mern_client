@@ -1,34 +1,127 @@
 import axios from "axios";
-import authHeader from "./auth-header";
 
 const API_URL = process.env.REACT_APP_API_DEVELOPMENT;
 
-const getPublicContent = () => {
-    return axios.get(API_URL + "all");
+export const userCart = async (cart, token) => {
+    return await axios.post(`${API_URL}/user/cart`, {cart}, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
 };
 
-const getUserBoard = () => {
-    return axios.get(API_URL + "subscriber", {headers: authHeader()});
+
+export const getUserCart = async (token) => {
+    return await axios.get(`${API_URL}/user/cart`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+export const emptyUserCart = async (token) => {
+    return await axios.delete(`${API_URL}/user/cart`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
 };
 
 
-const getCarrierBoard = () => {
-    return axios.get(API_URL + "carrier", {headers: authHeader()});
+export const saveUserAddress = (data, token) => {
+    return axios
+        .post(`${API_URL}/user/address`, data, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        })
+
+        .then((response) => {
+            return response.data;
+        });
 };
 
-const getFarmerBoard = () => {
-    return axios.get(API_URL + "farmer", {headers: authHeader()});
+
+// export const saveUserAddress = async (token, address) => {
+//     return await axios.post(`${API_URL}/user/address`, {address}, {
+//         headers: {
+//             'Authorization': `Bearer ${token}`,
+//         }
+//     });
+// };
+
+
+export const applyCoupon = async (token, body) => {
+    return await axios.post(`${API_URL}/user/cart/coupon`, body, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+export const createOrder = async (token, data) => {
+    return await axios.post(`${API_URL}/user/order`, data, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
 };
 
-const getAdminBoard = () => {
-    return axios.get(API_URL + "admin", {headers: authHeader()});
+
+export const getUserOrders = async (token) => {
+    return await axios.get(`${API_URL}/user/orders`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
 };
 
-const userService = {
-  getPublicContent,
-  getUserBoard,
-  getCarrierBoard,
-  getAdminBoard,
+export const getWishList = async (token) => {
+    return await axios.get(`${API_URL}/user/wishlist`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
 };
 
-export default userService
+
+export const addToWishlist = async (token, productId) => {
+    return await axios.post(`${API_URL}/user/wishlist`, {productId}, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+}
+
+export const removeWishList = async (productId, token) => {
+    return await axios.put(`${API_URL}/user/wishlist/${productId}`, {}, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+
+
+export const createCODOrderForUser = async (token, cashOnDelivery, coupon) => {
+    return await axios.post(`${API_URL}/user/cash-order`, {cashOnDelivery, couponApplied: coupon}, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+
+export const createMPESAOderForUser = async (token, phoneNumber, coupon) => {
+    return await axios.post(`${API_URL}/user/mpesa-order`, {phoneNumber, couponApplied: coupon}, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+export const createPaypalOrderForUser = async (token, cashOnDelivery, coupon) => {
+    return await axios.post(`${API_URL}/user/paypal-order`, {cashOnDelivery, couponApplied: coupon}, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+
+
+

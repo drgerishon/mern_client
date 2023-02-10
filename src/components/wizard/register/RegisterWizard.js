@@ -1,10 +1,11 @@
 import React from 'react';
 import Input from "../../../ui/input/Input";
 
-const Email = ({feedback, config, handleChange, id}) => {
+const RegisterWizard = ({page, feedback, config, handleChange, id}) => {
 
-    return (
-        <Input
+    function displayPage() {
+        if (page === 0) {
+            return  <Input
             id='email'
             feedback={feedback}
             className='col-12 '
@@ -16,7 +17,15 @@ const Email = ({feedback, config, handleChange, id}) => {
             shouldValidate={config.validation}
             touched={config.touched}
             changed={(event) => handleChange(event, id)}/>
+        }
+    }
+
+
+    return (
+        <>
+            {displayPage()}
+        </>
     );
 };
 
-export default Email;
+export default RegisterWizard;

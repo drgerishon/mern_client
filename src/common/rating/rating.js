@@ -1,5 +1,6 @@
 import React from 'react';
 import {Rating} from 'react-simple-star-rating'
+import './rating.css'
 
 export const showAverageRating = (product) => {
 
@@ -13,16 +14,15 @@ export const showAverageRating = (product) => {
 
         const averageRating = (sumOfStars * 5) / maximumRating
 
-        return <span className='d-flex align-items-center '>
-            <Rating
-                initialValue={averageRating}
-                readonly
-                allowFraction
-                size={25}/>
-            ({product.rating.length})
-        </span>
+        return <Rating
+            initialValue={averageRating}
+            readonly
+            fillColor='#FF5722'
+            allowFraction
+            size={18}/>
+
     } else {
-        return 'No rating yet'
+        return <span  className='rating'>No ratings yet</span>
     }
 
 };

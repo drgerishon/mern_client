@@ -1,7 +1,7 @@
 import React from 'react';
-import {MDBCheckbox, MDBInput, MDBTextArea, MDBValidationItem} from "mdb-react-ui-kit";
-import classes from './Input.module.css'
-import {useSelector} from "react-redux";
+import {MDBCheckbox, MDBInput, MDBTextArea} from "mdb-react-ui-kit";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 const Input = ({
@@ -37,31 +37,38 @@ const Input = ({
                     id={id}
                     className='mb-3'
                     {...elementConfig}
-
+                    checked={value === true}
                     value={value}
                     onChange={changed}/>;
-
-
+            break;
+        case ('date'):
+            inputElement =
+                <DatePicker
+                    id={id}
+                    dropDownMode="select"
+                    className='mb-3 form-control'
+                    {...elementConfig}
+                    selected={value}
+                    onChange={changed}/>
             break;
         case ('textarea'):
             inputElement = <MDBTextArea
                 id={id}
                 className='mb-3'
                 {...elementConfig}
-
                 value={value}
                 onChange={changed}/>;
             break;
         case ('select'):
             inputElement = (
                 <select
-                    className='mb-3'
+                    className='mb-3 form-control'
                     value={value}
                     id={id}
                     onChange={changed}>
                     {elementConfig.options.map(option => (
                         <option key={option.value} value={option.value}>
-                            {option.displayValue}
+                            {option.display}
                         </option>
                     ))}
                 </select>
@@ -85,7 +92,6 @@ const Input = ({
         }
 
     }
-
 
 
     return (

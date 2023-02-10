@@ -1,83 +1,110 @@
 import React, {useEffect, useState} from 'react';
-import {getProductsByCount, removeProduct} from "../../../functions/product";
-import AdminNav from "../../../components/nav/AdminNav";
-import AdminProductCard from "../../../components/cards/AdminProductCard";
+import ProductCard from "../../../components/cards/ProductCard";
 import {useSelector} from "react-redux";
-import {toast} from "react-toastify";
+import {getProductsByCount, removeProduct} from "../../../redux/services/product.service";
+import {withSwal} from "react-sweetalert2";
+import {useNavigate} from "react-router-dom";
 
-const AllProducts = () => {
+
+const AllProducts = ({swal}) => {
 
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(false)
     const {user} = useSelector((state) => state.auth);
-
-
     useEffect(() => {
         loadAllProductsByCount()
 
     }, [])
-
-
-    function loadAllProductsByCount() {
+    const navigate = useNavigate()
+    const loadAllProductsByCount = () => {
         setLoading(true)
         getProductsByCount(100)
             .then(r => {
                 setProducts(r.data)
                 setLoading(false)
-                console.log(r)
             })
             .catch(e => {
                 setLoading(false)
                 console.log(e)
             })
-    }
+    };
 
-    function handleRemove(slug) {
-        if (window.confirm('Are you sure you want to delete this category?')) {
-            setLoading(true)
-            removeProduct(slug, user.token)
-                .then(r => {
+
+
+    const handleRemove = slug => {
+        swal.fire({
+            titleText: 'Are you sure? ',
+            text: 'This operation cannot be undone',
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonText: 'No',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Yes',
+            showLoaderOnConfirm: true,
+            preConfirm: () => {
+                return removeProduct(slug, user.token)
+                    .then(response => {
+                        if (response.status !== 200) {
+                            throw new Error(response.statusText)
+                        }
+                        return response
+                    })
+                    .catch(error => {
+                        swal.showValidationMessage(
+                            `Request failed: ${error}`
+                        )
+                    })
+            },
+            allowOutsideClick: () => !swal.isLoading()
+        }).then((result) => {
+
+
+            if (result.isConfirmed) {
+                swal.fire({
+                    icon: 'success',
+                    timer: 2000,
+                    confirmButtonColor: '#3085d6',
+                    text: `${result.value.data.title} Removed`,
+                }).then(r => {
                     setLoading(false)
                     loadAllProductsByCount()
-                    toast.success(`${r.data.title} is deleted`)
-
                 })
-                .catch(e => {
-                    if (e.response.status === 400) {
-                        toast.error(e.response.data)
-                    }
+            } else if (result.isDismissed) {
+                swal.fire({text: 'Cancelled', icon: 'info', timer: 1500}).then(r => {
                     setLoading(false)
                 })
+            }
+        })
 
-        }
 
-    }
+    };
 
 
     return (
-        <div className={'container-fluid'}>
-            <div className="row">
-                <div className="col-md-2">
-                    <AdminNav/>
-                </div>
-
-                <div className="col-md-10">
-                    <div className="row">
-                        {loading ? <p>loading...</p> : <h2>Products</h2>}
-                        {products.map(product => <div
-                                className='col-lg-4 col-md-6 mb-3'
-                                key={product._id}>
-                                <AdminProductCard
-                                    product={product}
-                                    handleRemove={handleRemove}/>
-                            </div>
-                        )}
+        <div className="row">
+            <h5> {loading ? "loading..." : products.length > 0 ? 'Products' : 'No products'}</h5>
+            {
+                products.map(product => <div
+                        className='col-lg-4 col-md-6 mb-3'
+                        key={product._id}>
+                        <ProductCard
+                            product={product}
+                            variant1='primary'
+                            btnCaption1='Edit'
+                            btnCaption2='Delete'
+                            variant2='danger'
+                            btn1Clicked={() => {
+                                navigate(`/admin/product/${product.slug}`)
+                            }}
+                            btn2Clicked={() => handleRemove(product._id)}
+                        />
                     </div>
-                </div>
-            </div>
-
+                )
+            }
         </div>
+
+
     );
 };
 
-export default AllProducts;
+export default withSwal(AllProducts);

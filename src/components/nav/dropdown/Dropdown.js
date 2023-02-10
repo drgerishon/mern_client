@@ -20,11 +20,12 @@ const Dropdown = () => {
     const {user: currentUser} = useSelector((state) => state.auth);
 
 
+
     return (
         <li className="nav-item dropdown pe-3" onClick={toggleClosed}>
             <div className="nav-link nav-profile d-flex align-items-center pe-0">
                 <Icon icon="material-symbols:settings-account-box-outline" fontSize={20}/>
-                <span className="d-none d-md-block dropdown-toggle ps-2">Hi,{' '}{currentUser.name}</span>
+                <span className="d-none d-md-block dropdown-toggle ps-2">Hi,{' '}{currentUser.firstName}</span>
             </div>
 
             <ul className={`dropdown-menu dropdown-menu-end dropdown-menu-arrow profile ${open ? 'dropdown-active' : ''}`}

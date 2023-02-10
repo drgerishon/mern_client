@@ -1,0 +1,15 @@
+.slider-container {
+    width: 100%;
+    height: 100%;
+}
+
+.slider-item-div {
+    max-height: 450px;
+    width: 100%;
+}
+.slider-container .carousel .thumb{
+ height: 50px!important;
+}
+.carousel-style {
+    height: 100% !important;
+}

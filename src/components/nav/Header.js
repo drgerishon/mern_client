@@ -6,10 +6,14 @@ import {Icon} from '@iconify/react';
 import Dropdown from "./dropdown/Dropdown";
 import {} from "../../redux/slices/auth";
 import {useDispatch, useSelector} from "react-redux";
+import Search from "../../ui/forms/Search";
 
 
-const Header = ({clicked,scrolled,handleScroll}) => {
+const Header = ({clicked, scrolled, handleScroll}) => {
     const {user: currentUser} = useSelector((state) => state.auth);
+    const {cart} = useSelector((state) => ({...state}));
+    const [searchToggle, setSearchToggle] = useState(false)
+
     let navbarClasses = [`header d-flex align-items-center `];
     if (scrolled) {
         navbarClasses.push('fixed-top')
@@ -19,6 +23,10 @@ const Header = ({clicked,scrolled,handleScroll}) => {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener("scroll", handleScroll);
     }, [handleScroll])
+
+    function searchBarToggle() {
+        setSearchToggle((prevState => (!prevState)))
+    }
 
     return (
         <>
@@ -33,23 +41,13 @@ const Header = ({clicked,scrolled,handleScroll}) => {
                 </div>
 
 
-                <div className="search-bar">
-                    <form className="search-form d-flex align-items-center" method="POST" action="#">
-                        <input type="text" name="query" placeholder="Search" title="Enter search keyword"/>
-                        <button type="submit" title="Search">
-                            <Icon icon="bi:search" className="icon" fontSize={20}/>
-                        </button>
-                    </form>
+                <div className={`search-bar ${searchToggle && 'search-bar-show'}`}>
+                    <Search/>
                 </div>
 
-
-                <nav className="header-nav ms-auto">
+                <nav className="header-nav ">
                     <ul className="d-flex align-items-center">
-                        <li className="nav-item d-block d-lg-none">
-                            <Link to='/' className="nav-link nav-icon search-bar-toggle ">
-                                <Icon icon="bi:search" fontSize={20}/>
-                            </Link>
-                        </li>
+
 
                         <li className="nav-item">
                             <Link to='/' className="nav-link nav-icon" data-bs-toggle="dropdown">
@@ -66,11 +64,26 @@ const Header = ({clicked,scrolled,handleScroll}) => {
                         </li>
 
                         <li className="nav-item">
+                            <Link to='/market' className="nav-link nav-icon" data-bs-toggle="dropdown">
+                                <div className="d-flex align-items-center pe-0">
+                                    <div className='ps-2 d-flex align-items-center'>
+                                        <Icon icon="healthicons:market-stall" fontSize={20}/>
+                                    </div>
+                                    <div className='label ps-2'>
+                                        Market
+                                    </div>
+
+                                </div>
+                            </Link>
+                        </li>
+
+
+                        <li className="nav-item">
                             <Link to='/cart' className="nav-link nav-icon" data-bs-toggle="dropdown">
                                 <div className="d-flex align-items-centerS ">
                                     <div className=' badge-class d-flex align-items-center'>
                                         <Icon icon="material-symbols:shopping-cart-outline-sharp" fontSize={20}/>
-                                        <span className="badge bg-primary badge-number">4</span>
+                                        <span className="badge bg-primary badge-number">{cart.length}</span>
                                     </div>
                                     <div className='label ps-2'>
                                         Cart
@@ -79,6 +92,16 @@ const Header = ({clicked,scrolled,handleScroll}) => {
                             </Link>
                         </li>
 
+
+                    </ul>
+                </nav>
+                <nav className="header-nav ms-auto">
+                    <ul className="d-flex align-items-center">
+                        <li className="nav-item d-block d-lg-none">
+                            <div className="nav-link nav-icon" onClick={searchBarToggle}>
+                                <Icon icon="bi:search" />
+                            </div>
+                        </li>
 
                         <li className="nav-item">
                             <Link to='/help' className="nav-link nav-icon" data-bs-toggle="dropdown">

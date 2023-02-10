@@ -1,7 +1,7 @@
 .wrapper {
     position: relative;
     display: inline-block;
-
+    width: 100%;
 
 }
 
@@ -16,10 +16,9 @@
 
     /* Position the tooltip */
     position: absolute;
-
     z-index: 1000;
     bottom: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     left: 50%;
     margin-left: -60px;
 

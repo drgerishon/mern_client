@@ -10,10 +10,10 @@ import LocalSearch from "../../../ui/forms/LocalSearch";
 import Auth from "../../../components/wrappers/Auth";
 import './Category.css'
 import {errorHelper} from "../../../common/Utility";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 import {withSwal} from "react-sweetalert2";
 
-const CategoryCreate = () => {
+const CategoryCreate = ({swal}) => {
     const [name, setName] = useState('')
     const [loading, setLoading] = useState('')
     const {user} = useSelector((state) => state.auth);
@@ -62,8 +62,7 @@ const CategoryCreate = () => {
 
     function handleRemove(slug) {
 
-
-        Swal.fire({
+        swal.fire({
             titleText: 'Are you sure? ',
             text: 'All sub categories associated with it will also be deleted!.You won\'t be able to revert this! ',
             icon: 'warning',
@@ -80,16 +79,15 @@ const CategoryCreate = () => {
                         return response
                     })
                     .catch(error => {
-                        Swal.showValidationMessage(
+                        swal.showValidationMessage(
                             `Request failed: ${error}`
                         )
                     })
             },
-            allowOutsideClick: () => !Swal.isLoading()
+            allowOutsideClick: () => !swal.isLoading()
         }).then((result) => {
-
             if (result.isConfirmed) {
-                Swal.fire({
+                swal.fire({
                     icon: 'success',
                     timer: 2000,
                     confirmButtonColor: '#3085d6',
@@ -99,7 +97,7 @@ const CategoryCreate = () => {
                     loadCategories()
                 })
             } else if (result.isDismissed) {
-                Swal.fire({text: 'Changes are not saved', icon: 'info', timer: 1500}).then(r => {
+                swal.fire({text: 'Changes are not saved', icon: 'info', timer: 1500}).then(r => {
                     setLoading(false)
                 })
             }
@@ -167,4 +165,4 @@ const CategoryCreate = () => {
     );
 };
 
-export default CategoryCreate;
+export default withSwal(CategoryCreate);

@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import Select from 'react-select'
-import Option from 'react-select'
 
 const ProductUpdateForm = ({
                                handleSubmit,
                                setValues,
                                handleChange,
                                values,
+                               loading,
                                categories,
                                subOptions,
                                handleCategoryChange,
@@ -78,30 +78,8 @@ const ProductUpdateForm = ({
                     value={quantity}
                     onChange={handleChange}/>
             </div>
-            <div className="mb-3">
-                <label>Color</label>
-                <select
-                    value={color}
-                    className="form-select "
-                    name='color'
-                    onChange={handleChange}>
-                    {colors.map((c, i) => {
-                        return <option value={c} key={i}>{c}</option>
-                    })}
-                </select>
-            </div>
-            <div className="mb-3">
-                <label>Brand</label>
-                <select
-                    className="form-select "
-                    name='brand'
-                    value={brand}
-                    onChange={handleChange}>
-                    {brands.map((c, i) => {
-                        return <option value={c} key={i}>{c}</option>
-                    })}
-                </select>
-            </div>
+
+
             <div className="mb-3">
                 <label>Categories</label>
                 <select
@@ -135,7 +113,13 @@ const ProductUpdateForm = ({
             </div>
 
             <div className="mb-3">
-                <button type="submit" className="btn btn-outline-info">Save</button>
+                <button
+                    type="submit"
+                    className="btn btn-outline-info" disabled={loading}>{loading ?
+                    <div className="spinner-border small" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div> : 'Save'}
+                </button>
             </div>
 
         </form>

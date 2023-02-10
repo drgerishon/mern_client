@@ -1,49 +1,48 @@
 
-.card-product-list, .card-product-grid {
-    margin-bottom: 0
-}
-
-.card {
-    width: 100%;
+.product-card {
     position: relative;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 23px;
-    margin-top: 50px
+    overflow: hidden;
+    /*margin: 10px;*/
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+    border-radius: 10px;
+    border: none;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+
+
+}
+
+.product-card:hover {
+    Box-shadow: 0 2px 35px 0 rgba(68, 88, 144, 0.2);
+    transform: translateY(-10px) !important;
 }
 
 
-.card-product-grid .img-wrap {
-    border-radius: 0.2rem 0.2rem 0 0;
-    height: 220px
-}
-
-.card .img-wrap {
+.product-card .img-wrap {
     overflow: hidden
 }
 
-.card-lg .img-wrap {
-    height: 280px
-}
 
-.card-product-grid .img-wrap {
+.product-card .img-wrap {
     border-radius: 0.2rem 0.2rem 0 0;
-    height: 275px;
+    height: 200px;
     /*padding: 16px*/
 }
 
-[class*='card-product'] .img-wrap img {
-    height: 100%;
+@media screen and (max-width: 768px) {
+    .product-card .img-wrap {
+        border-radius: 0.2rem 0.2rem 0 0;
+        height: 100%;
+        /*padding: 16px*/
+    }
+
+
+}
+
+.product-card .img-wrap img {
+
     max-width: 100%;
     width: 100%;
     display: inline-block;
@@ -52,40 +51,49 @@
 }
 
 
-
-.card-product-grid .info-wrap {
+.product-card .info-wrap {
     overflow: hidden;
     padding: 18px 20px
 }
 
-[class*='card-product'] .title {
+.product-card {
     color: #212529;
 }
 
-.bottom-wrap {
-    padding: 18px;
-    border-top: 1px solid #e4e4e4
-}
 
-.bottom-wrap-payment {
+.product-card .bottom-wrap-payment {
     padding: 0;
     border-top: 1px solid #e4e4e4
 }
 
-.rated {
+.product-card .rated {
     font-size: 10px;
     margin-top: 5px;
     color: #b3b4b6
 }
 
-.btn {
-    font-weight: 600;
-    border: 1px solid transparent;
-    padding: 0.45rem 0.85rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: 0.2rem
+
+.toast-message {
+
+    background-color: #333333;
+    color: #ffffff;
+    border-radius: 2px;
+    padding: 20px 10px;
+    min-width: 400px;
+    max-width: 450px;
+    border-left: 4px solid;
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.08);
+    transition: all linear 0.3s;
+
 }
 
+.msg {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
+.progress {
+    background: #444444;
+}
 

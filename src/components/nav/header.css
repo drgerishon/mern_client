@@ -65,7 +65,7 @@
     }
 
     .header .search-bar-show {
-        top: 60px;
+        top: 100px;
         visibility: visible;
         opacity: 1;
     }

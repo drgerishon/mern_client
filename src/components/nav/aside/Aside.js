@@ -6,7 +6,7 @@ import AdminContent from "./admin";
 import {useCurrentPath} from "../../../hooks/useCurrentPath";
 import {useLocation, useParams} from 'react-router-dom';
 
-const Aside = ({open, handleScroll, scrolled}) => {
+const Aside = ({open, handleScroll, scrolled, general}) => {
     const location = useLocation();
     const params = useParams();
     const path = useCurrentPath(location, params);
@@ -30,15 +30,28 @@ const Aside = ({open, handleScroll, scrolled}) => {
         {title: 'Update/delete a blog', to: 'crud/blogs'},
     ]
 
-    let avoidAdminLinkPaths = ['/', '/shop', '/cart']
+    const excludedRoutes = ['/', '/shop', '/cart', '/market', '/product/:slug', '/checkout']
+
+    let toggleClasses = []
+
+    if (open) {
+        toggleClasses = [classes.Close]
+    }
+    if (!open) {
+        toggleClasses = [classes.CloseMobile]
+    }
+    if (general && open) {
+        toggleClasses = []
+    }
+    if (general && !open) {
+        toggleClasses = [classes.Close, classes.CloseMobile]
+    }
 
 
     return (
-        <aside className={`${attachedClasses.join(' ')} ${!open ? classes.CloseMobile : classes.Close}`}>
+        <aside className={`${attachedClasses.join(' ')} ${toggleClasses.join(' ')}`}>
             <ul className={classes.SidebarList}>
-                {/*<li className={classes.NavHeading}>Search and Filter</li>*/}
-                {/*<Accordion2 title='Categories' accList={userBlogList} eventKey={'0'}/>*/}
-                {!avoidAdminLinkPaths.includes(path) && currentUser && <>
+                {!excludedRoutes.includes(path) && currentUser && <>
                     {currentUser.role === 'admin' && <AdminContent/>}
                 </>
                 }
