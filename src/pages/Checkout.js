@@ -5,14 +5,14 @@ import {applyCoupon, emptyUserCart, getUserCart, saveUserAddress} from "../redux
 import {toast} from "react-toastify";
 import {couponApplied} from "../redux/slices/coupon";
 import {Link, Navigate, useNavigate} from "react-router-dom";
-
-
 import DeliveryAddress from "../components/wizard/checkout/DeliveryAddress";
 import {extractAddress, loadAsyncScript} from "../components/wizard/checkout/loadAsync";
 import {updateUserAddress} from "../redux/slices/auth";
 import {addToCart} from "../redux/slices/cart";
 import {setTotalAfterDiscount} from "../redux/slices/totalAfterDiscount";
 import {selectPaymentMethod} from "../redux/slices/paymentMethods";
+import {getAddress} from "../functions";
+import {clearMessage} from "../redux/slices/message";
 
 
 const mapApiJs = 'https://maps.googleapis.com/maps/api/js';
@@ -39,6 +39,9 @@ const Checkout = () => {
     const selectedPaymentMethod = useSelector((state) => state.paymentMethods.selectedPaymentMethod);
 
 
+    useEffect(() => {
+        dispatch(clearMessage());
+    }, [dispatch])
     useEffect(() => {
         getUserCart(token).then(response => {
             // console.log(JSON.stringify(response.data, null, 4))
@@ -79,9 +82,9 @@ const Checkout = () => {
         const place = autocomplete.getPlace();
         const _address = extractAddress(place);
         setAddress(_address);
-
-        const info = {address: _address, token}
+        const info = {address: _address, token,place}
         info.address.name = searchInput.current && searchInput.current.value && searchInput.current.value
+
         dispatch(updateUserAddress(info))
             .unwrap()
             .then((res) => {
@@ -105,7 +108,7 @@ const Checkout = () => {
                 componentRestrictions: {'country': ['ke']},
                 types: ["establishment"]
             });
-        autocomplete.setFields(["address_component", 'formatted_address', 'place_id', "geometry"]);
+        autocomplete.setFields(["address_component", 'formatted_address', 'place_id','name', "geometry"]);
         autocomplete.addListener("place_changed", () => onChangeAddress(autocomplete));
 
 
@@ -129,7 +132,7 @@ const Checkout = () => {
                 const _address = extractAddress(place);
                 setAddress(_address);
                 searchInput.current.value = _address.plain();
-                const info = {address: _address, token}
+                const info = {address: _address, token,place}
                 info.address.name = searchInput.current.value
                 dispatch(updateUserAddress(info))
                     .unwrap()
@@ -305,7 +308,7 @@ const Checkout = () => {
                                     <button
                                         className="btn btn-primary"
                                         onClick={() => (navigate('/payment', {state: {address}}))}
-                                        disabled={!auth.addressSaved || !products.length|| !selectedPaymentMethod}>
+                                        disabled={!auth.addressSaved || !products.length || !selectedPaymentMethod}>
                                         Next step
                                     </button>
                                     <button className="btn btn-danger" onClick={emptyCart}

@@ -6,10 +6,14 @@ import {useSelector, useDispatch} from "react-redux";
 import {Icon} from "@iconify/react";
 import defaultImage from "../../images/default.jpg";
 import Input from "../../ui/input/Input";
-import {Link} from "react-router-dom";
 import {checkValidity, updateObject} from "../../common/Utility";
-import {createMPESAOderForUser} from "../../redux/services/user.service";
+import {initiateMPESAOderForUser} from "../../redux/services/user.service";
 import {clearMessage, setMessage} from "../../redux/slices/message";
+import {io} from 'socket.io-client';
+
+
+const socket = io(process.env.REACT_APP_API_DEVELOPMENT_SOCKET);
+
 
 const Card = lazy(() => import("antd").then(module => ({default: module.Card})));
 
@@ -45,7 +49,7 @@ const Mpesa = () => {
     const [payable, setPayable] = useState(0)
     const [cartTotal, setCartTotal] = useState(0)
     const [succeeded, setSucceed] = useState(false)
-    const [success, setSuccess] = useState(false)
+
 
     const dispatch = useDispatch()
     const [values, setValues] = useState(initialValues);
@@ -53,6 +57,19 @@ const Mpesa = () => {
     useEffect(() => {
         dispatch(clearMessage());
     }, [dispatch]);
+
+
+    // useEffect(() => {
+    //     const socket = io('https://5edb-102-0-0-246.in.ngrok.io/api/callback%7D');
+    //     socket.on('mpesaOrderData', (data) => {
+    //         console.log('Received MPESA order data:', data);
+    //         setLoading(false);
+    //     });
+    //     return () => {
+    //         socket.disconnect();
+    //     };
+    // }, []);
+
 
     useEffect(() => {
         createPaymentIntent(auth.user.token, {
@@ -68,36 +85,46 @@ const Mpesa = () => {
     }, [auth.user.token, coupon, dispatch, paymentMethods.selectedPaymentMethod])
 
 
-    function handleSubmit(e) {
-        e.preventDefault()
-        setLoading(true)
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setLoading(true);
         let value = values.mpesaPhone.phone.value;
         let mobile = value.replace(/ /g, '');
         if (value.slice(0, 1) === '+') {
-            mobile = mobile.substring(4)
+            mobile = mobile.substring(4);
         }
         if (value.charAt(0) === '0') {
             mobile = mobile.substr(1);
         }
+
         dispatch(setMessage('Please check your phone and enter your MPESA pin to authorize the transaction'))
-        createMPESAOderForUser(auth.user.token, mobile, coupon).then(res => {
-            setLoading(false)
-            if (res.data.success) {
-                console.log(res.data.data.CustomerMessage)
-                dispatch(setMessage(res.data.data.CustomerMessage))
-                setSuccess(true)
+        initiateMPESAOderForUser(auth.user.token, mobile, coupon).then(res => {
+            if (res.data.ResponseCode === '0') {
+                socket.on('failedMpesa', (data) => {
+                    dispatch(setMessage(data))
+                    setSucceed(false)
+                    setLoading(false);
+                });
+                socket.on('succeedMpesa', (data) => {
+                    dispatch(setMessage(data))
+                    setSucceed(true)
+                    setLoading(false);
+                });
+
             } else {
-                setSuccess(false)
-                dispatch(setMessage(res.data.error))
+                setSucceed(false)
+                setLoading(false);
+                dispatch(setMessage('something went wrong'))
             }
         }).catch((e) => {
             setLoading(false)
             console.log(e)
-            setSuccess(false)
+            setSucceed(false)
         })
 
 
     }
+
 
     const formElementsArray = [];
 
@@ -151,7 +178,7 @@ const Mpesa = () => {
                             <>
                                 <Icon icon="ant-design:check-outlined" className='text-success' fontSize={20}/>
                                 <br/>
-                                Total payable: KES {(payable / 100).toFixed(2)}
+                                Total payable: KES {(payable).toFixed(2)}
                             </>
                         ]}
                         cover={<img src={defaultImage} alt='payment'
@@ -188,26 +215,24 @@ const Mpesa = () => {
                             {loading ? <>
                                 <MDBSpinner size='sm' role='status' tag='span' className='me-2'/>
                                 Loading...
-                            </> : 'Login'}
+                            </> : 'Pay now'}
                         </MDBBtn>
                     </div>
+                    {!succeeded && !loading && <div className='col-12'>
+                        <p className='text-danger'>{message.message}</p>
+                    </div>
+                    }
+                    {loading && <div className='col-12'>
+                        <p className='text-info'>{message.message}</p>
+                    </div>
+                    }
+                    {succeeded && !loading && <div className='col-12'>
+                        <p className='text-success'>{message.message}</p>
+                    </div>
+                    }
+
                 </>
-                {loading || setSuccess ? <div className="col-12 ">
-                    <div
-                        className={"text-info"}
-                        role="alert"
-                    >
-                        {message.message}
-                    </div>
-                </div> : <div className="col-12 ">
-                    <div
-                        className={"text-danger"}
-                        role="alert"
-                    >
-                        {message.message}
-                    </div>
-                </div>
-                }
+
             </form>
         </div>
 

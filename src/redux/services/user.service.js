@@ -57,8 +57,15 @@ export const applyCoupon = async (token, body) => {
         }
     });
 };
-export const createOrder = async (token, data) => {
-    return await axios.post(`${API_URL}/user/order`, data, {
+export const createStripeOrderForUser = async (token, data) => {
+    return await axios.post(`${API_URL}/user/stripe-order`, data, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+export const createOrderPaypalOrderForUser = async (token, data) => {
+    return await axios.post(`${API_URL}/user/paypal-order`, data, {
         headers: {
             'Authorization': `Bearer ${token}`,
         }
@@ -108,8 +115,8 @@ export const createCODOrderForUser = async (token, cashOnDelivery, coupon) => {
     });
 };
 
-export const createMPESAOderForUser = async (token, phoneNumber, coupon) => {
-    return await axios.post(`${API_URL}/user/mpesa-order`, {phoneNumber, couponApplied: coupon}, {
+export const initiateMPESAOderForUser = async (token, phoneNumber, coupon) => {
+    return await axios.post(`${API_URL}/user/initiate-mpesa-order`, {phoneNumber, couponApplied: coupon}, {
         headers: {
             'Authorization': `Bearer ${token}`,
         }

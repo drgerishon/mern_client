@@ -30,7 +30,7 @@ const Aside = ({open, handleScroll, scrolled, general}) => {
         {title: 'Update/delete a blog', to: 'crud/blogs'},
     ]
 
-    const excludedRoutes = ['/', '/shop', '/cart', '/market', '/product/:slug', '/checkout']
+    const excludedRoutes = ['/', '/shop', '/cart', '/market', '/product/:slug', '/checkout','/payment']
 
     let toggleClasses = []
 

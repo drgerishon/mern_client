@@ -40,6 +40,7 @@ const Checkout = lazy(() => import( "./pages/Checkout"));
 const CreateCouponPage = lazy(() => import( "./pages/admin/coupon/CreateCouponPage"));
 const CouponUpdate = lazy(() => import( "./pages/admin/coupon/CouponUpdate"));
 const Payment = lazy(() => import( "./pages/Payment"));
+const ConfirmationPage= lazy(() => import( "./pages/ConfirmationPage"));
 const App = () => {
     const {user: currentUser} = useSelector((state) => state.auth);
 
@@ -66,11 +67,7 @@ const App = () => {
                             <UserProductCreate/>
                         </UserRoute>
                     }/>
-                    <Route path="/payment" element={
-                        <UserRoute>
-                            <Payment/>
-                        </UserRoute>
-                    }/>
+
                     <Route path="admin/dashboard" element={
                         <AdminRoute>
                             <AdminDashboard/>
@@ -142,6 +139,13 @@ const App = () => {
                     <Route path="/checkout" element={
                         <Checkout/>
                     }/>
+
+                     <Route path="/payment" element={
+                        <UserRoute>
+                            <Payment/>
+                        </UserRoute>
+                    }/>
+
                     {/* <Route path="/checkout" element={*/}
                     {/*    <UserRoute>*/}
                     {/*         <Checkout/>*/}

@@ -1,7 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
-    selectedPaymentMethod: '',
+    selectedPaymentMethod: 'Mpesa',
     paymentMethods: ['Mpesa', 'Card', 'Paypal'],
 }
 const paymentMethodsSlice = createSlice({

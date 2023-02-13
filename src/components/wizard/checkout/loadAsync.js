@@ -13,6 +13,9 @@ export function loadAsyncScript(src) {
 
 
 export const extractAddress = (place) => {
+
+    console.log('REACT',place)
+
     const address = {
         city: "",
         state: "",
@@ -47,8 +50,6 @@ export const extractAddress = (place) => {
     }
 
 
-
-
     place.address_components.forEach(component => {
         const types = component.types;
         const value = component.long_name;
@@ -66,6 +67,7 @@ export const extractAddress = (place) => {
         // }
 
         if (types.includes("postal_code")) {
+
             address.zipCode = value;
         }
 

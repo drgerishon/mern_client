@@ -3,6 +3,7 @@ import {setMessage} from "./message";
 import AuthService from "../services/auth.service";
 import {toast} from "react-toastify";
 import {saveUserAddress} from "../services/user.service";
+import {getAddress} from "../../functions";
 
 
 const user = JSON.parse(localStorage.getItem("user"));
@@ -200,7 +201,14 @@ export const updateUserAddress = createAsyncThunk(
     "auth/updateUserAddress",
     async (info, thunkAPI) => {
         try {
-            const data = await saveUserAddress(info.address, info.token);
+
+            if (!info.address.zipCode) {
+                const {postcode} = await getAddress(info.address.lat, info.address.lng)
+                if (postcode) {
+                    info.address.zipCode = postcode
+                }
+            }
+            const data = await saveUserAddress(info, info.token);
             return {userInfo: data};
         } catch (error) {
             const message =
@@ -240,6 +248,8 @@ const authSlice = createSlice({
 
         [updateUserAddress.fulfilled]: (state, action) => {
             const {address, ok} = action.payload.userInfo;
+
+
             const sortAddresses = (address) => {
                 return address.sort((a, b) => {
                     let dateA = new Date(a.updatedAt);
