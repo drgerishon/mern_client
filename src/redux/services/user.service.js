@@ -131,8 +131,8 @@ export const initPaypalOrder = async (token, cashOnDelivery, coupon) => {
     });
 };
 
-export const capturePaypalPayment = async (token,paymentId) => {
-    return await axios.post(`${API_URL}/user/capture-paypal-payment`, paymentId, {
+export const capturePaypalPaymentAndSavePaypalOrder = async (token,paymentId) => {
+    return await axios.post(`${API_URL}/user/capture-paypal-payment-and-save-order`, paymentId, {
         headers: {
             'Authorization': `Bearer ${token}`,
         }

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {loadStripe} from "@stripe/stripe-js";
 import {Elements} from "@stripe/react-stripe-js";
-import {Link, useLocation} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import '../stripe.css'
 import StripeCheckout from "../components/payment/StripeCheckout";
 import {Navigate} from 'react-router-dom';
@@ -20,15 +20,12 @@ const Payment = () => {
     const [payable, setPayable] = useState(0)
     const [cartTotal, setCartTotal] = useState(0)
     const [discountAmount, setDiscountAmount] = useState(0)
-    const [convertedPayable, setConvertedPayable] = useState(0)
-    const [convertedTotalCart, setConvertedTotalCart] = useState(0)
+    const [processing, setProcessing] = useState(false)
     const {auth, coupon, totalAfterDiscount, paymentMethods} = useSelector(state => ({...state}))
-    const [convertedTotalAfterDiscount, setConvertedTotalAfterDiscount] = useState(0)
-
     const location = useLocation()
     const selectedPaymentMethod = useSelector((state) => state.paymentMethods.selectedPaymentMethod);
-
     const dispatch = useDispatch()
+    const [showForm, setShowForm] = useState(true)
 
     useEffect(() => {
         dispatch(clearMessage());
@@ -39,7 +36,6 @@ const Payment = () => {
             couponApplied: coupon,
             selectedPaymentMethod: paymentMethods.selectedPaymentMethod
         }).then(res => {
-            console.log(res.data)
             setStripeClientSecret(res.data.stripeClientSecret)
             setPaypalClientSecret(res.data.paypalClientSecret)
             setCartTotal(res.data.cartTotal)
@@ -51,6 +47,7 @@ const Payment = () => {
             console.log(e)
         })
     }, [auth.user.token, coupon, dispatch, paymentMethods.selectedPaymentMethod])
+
     const initialOptions = {
         "client-id": paypalClientSecret,
         currency: "USD",
@@ -62,70 +59,75 @@ const Payment = () => {
         return <Navigate to="/checkout"/>;
     }
 
+
     return (
-        <div className='container  min-vh-100'>
-            <div className="row">
-                <div className="col-md-8">
-                    <div className="card mb-3">
-                        <div className='card-header'>
-                            <h5 className='card-title'>Complete your Purchase</h5>
-                        </div>
-                        <div className="card-body">
-                            {
-                                selectedPaymentMethod === 'Card' && stripeClientSecret && <Elements stripe={promise}>
-                                    <StripeCheckout
-                                        address={location.state.address}
-                                        payable={payable}
-                                        discountAmount={discountAmount}
-                                        cartTotal={cartTotal}/>
-                                </Elements>
-                            }
+        <div className='container min-vh-100'>
+            {showForm && <>
+                <div>
+                    <div className="row">
+                        <div className="col-md-8">
+                            <div className="card mb-3">
+                                <div className='card-header'>
+                                    <h5 className='card-title'>Complete your Purchase</h5>
+                                </div>
+                                <div className="card-body">
+                                    {
+                                        selectedPaymentMethod === 'Card' && stripeClientSecret &&
+                                        <Elements stripe={promise}>
+                                            <StripeCheckout
+                                                address={location.state.address}
+                                                setShowForm={setShowForm}
+                                                clientSecret={stripeClientSecret}
+                                                discountAmount={discountAmount}
+                                                cartTotal={cartTotal}/>
+                                        </Elements>
+                                    }
 
-                            {
-                                selectedPaymentMethod === 'Paypal' && paypalClientSecret &&
-                                <PayPalScriptProvider options={initialOptions}>
-                                    <Paypal
-                                        address={location.state.address}
-                                        payable={payable}
-                                        discountAmount={discountAmount}
-                                        cartTotal={cartTotal}
-                                    />
+                                    {
+                                        selectedPaymentMethod === 'Paypal' && paypalClientSecret &&
+                                        <PayPalScriptProvider options={initialOptions}>
+                                            <Paypal
+                                                address={location.state.address}
+                                                payable={payable}
+                                                clientSecret={paypalClientSecret}
+                                                discountAmount={discountAmount}
+                                                cartTotal={cartTotal}
+                                            />
 
-                                </PayPalScriptProvider>
-                            }
-                            {
-                                selectedPaymentMethod === 'Mpesa' &&
-                                <Mpesa address={location.state.address}/>
-                            }
+                                        </PayPalScriptProvider>
+                                    }
+                                    {
+                                        selectedPaymentMethod === 'Mpesa' &&
+                                        <Mpesa address={location.state.address}/>
+                                    }
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-md-4">
-                    </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="card">
-                        <div className="card-header">
-                            <h4 className='card-title'>Payment information</h4>
-                        </div>
-                        <div className="card-body">
-                            <p className='card-title'>Delivering to</p>
-                            <span className='card-text'> {location.state.address.name}</span>
-                            <h3 className='card-title'>Payment method</h3>
-                            <span className='card-text'> {selectedPaymentMethod}</span>
-                            {coupon && totalAfterDiscount !== undefined ?
-                                <p className='card-text'>{`Total amount you will be charged ${selectedPaymentMethod === 'Mpesa' ?
-                                    `Ksh${totalAfterDiscount.value} ` : `$${convertedTotalAfterDiscount / 100}`}`}</p> :
-                                <p className='card-text text-secondary'>No Discount applied</p>}
-                        </div>
-                        <div className="card-footer">
-                            <div className='d-flex justify-content-between align-items-center'>
-                                <p>Thank you for shopping with us</p>
+                        <div className="col-md-4">
+                            <div className="card">
+                                <div className="card-header">
+                                    <h4 className='card-title'>Payment information</h4>
+                                </div>
+                                <div className="card-body">
+                                    <p className='card-title'>Delivering to</p>
+                                    <span className='card-text'> {location.state.address.name}</span>
+                                    <h3 className='card-title'>Payment method</h3>
+                                    <span className='card-text'> {selectedPaymentMethod}</span>
+                                </div>
+                                <div className="card-footer">
+                                    <div className='d-flex justify-content-between align-items-center'>
+                                        <p>Thank you for shopping with us</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </>}</div>
+
+
     );
 };
 
