@@ -19,6 +19,7 @@ const Payment = () => {
     const [paypalClientSecret, setPaypalClientSecret] = useState('')
     const [payable, setPayable] = useState(0)
     const [cartTotal, setCartTotal] = useState(0)
+    const [discountAmount, setDiscountAmount] = useState(0)
     const [convertedPayable, setConvertedPayable] = useState(0)
     const [convertedTotalCart, setConvertedTotalCart] = useState(0)
     const {auth, coupon, totalAfterDiscount, paymentMethods} = useSelector(state => ({...state}))
@@ -33,19 +34,17 @@ const Payment = () => {
         dispatch(clearMessage());
     }, [dispatch])
 
-
     useEffect(() => {
         createPaymentIntent(auth.user.token, {
             couponApplied: coupon,
             selectedPaymentMethod: paymentMethods.selectedPaymentMethod
         }).then(res => {
+            console.log(res.data)
             setStripeClientSecret(res.data.stripeClientSecret)
             setPaypalClientSecret(res.data.paypalClientSecret)
             setCartTotal(res.data.cartTotal)
             setPayable(res.data.payable)
-            setConvertedPayable(res.data.convertedPayable)
-            setConvertedTotalCart(res.data.convertedTotalCart)
-            setConvertedTotalAfterDiscount(res.data.convertedTotalAfterDiscount)
+            setDiscountAmount(res.data.discountAmount)
             dispatch(setTotalAfterDiscount(res.data.totalAfterDiscount))
 
         }).catch(e => {
@@ -76,11 +75,8 @@ const Payment = () => {
                                 selectedPaymentMethod === 'Card' && stripeClientSecret && <Elements stripe={promise}>
                                     <StripeCheckout
                                         address={location.state.address}
-                                        clientSecret={stripeClientSecret}
                                         payable={payable}
-                                        convertedTotalAfterDiscount={convertedTotalAfterDiscount}
-                                        convertedPayable={convertedPayable}
-                                        convertedTotalCart={convertedTotalCart}
+                                        discountAmount={discountAmount}
                                         cartTotal={cartTotal}/>
                                 </Elements>
                             }
@@ -90,18 +86,16 @@ const Payment = () => {
                                 <PayPalScriptProvider options={initialOptions}>
                                     <Paypal
                                         address={location.state.address}
-                                        convertedTotalCart={convertedTotalCart}
                                         payable={payable}
-                                        convertedPayable={convertedPayable}
-                                        convertedTotalAfterDiscount={convertedTotalAfterDiscount}/>
+                                        discountAmount={discountAmount}
+                                        cartTotal={cartTotal}
+                                    />
 
                                 </PayPalScriptProvider>
                             }
                             {
                                 selectedPaymentMethod === 'Mpesa' &&
-
                                 <Mpesa address={location.state.address}/>
-
                             }
                         </div>
                     </div>

@@ -1,74 +1,291 @@
-import React, {lazy, Suspense, useEffect, useRef, useState} from 'react';
-import {createPaymentIntent} from "../../redux/services/payment.service";
-import {setTotalAfterDiscount} from "../../redux/slices/totalAfterDiscount";
-import {useDispatch, useSelector} from "react-redux";
-import {Icon} from "@iconify/react";
-import defaultImage from "../../images/default.jpg";
-import {CardElement} from "@stripe/react-stripe-js";
-import {Link} from "react-router-dom";
-import {PayPalButtons, usePayPalScriptReducer,} from "@paypal/react-paypal-js";
-import axios from "axios";
-import {log} from "@craco/craco/dist/lib/logger";
-import {createOrderPaypalOrderForUser} from "../../redux/services/user.service";
-import PayCard from "./Card";
-import {io} from 'socket.io-client';
-import {setMessage} from "../../redux/slices/message";
+import React, {lazy, useState} from 'react';
 
-const API_URL = process.env.REACT_APP_API_DEVELOPMENT;
-const Card = lazy(() => import("antd").then(module => ({default: module.Card})));
-const Paypal = ({address}) => {
+import {useDispatch, useSelector} from "react-redux";
+import {PayPalButtons, usePayPalScriptReducer,} from "@paypal/react-paypal-js";
+import {useNavigate} from "react-router-dom";
+import {capturePaypalPayment, emptyUserCart, initPaypalOrder} from "../../redux/services/user.service";
+import PayCard from "./Card";
+import {withSwal} from "react-sweetalert2";
+import {clearMessage} from "../../redux/slices/message";
+import {selectPaymentMethod} from "../../redux/slices/paymentMethods";
+import {addToCart} from "../../redux/slices/cart";
+import {couponApplied} from "../../redux/slices/coupon";
+import {setTotalAfterDiscount} from "../../redux/slices/totalAfterDiscount";
+
+
+const Paypal = ({
+                    address: shippingAddress,
+                    swal,
+                    payable,
+                    discountAmount,
+                    cartTotal
+                }) => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const [succeeded, setSucceeded] = useState(false)
-    const [error, setError] = useState(null)
+    const [error, setError] = useState('')
     const [processing, setProcessing] = useState(false)
     const [disabled, setDisabled] = useState(true)
-    const socket = io(process.env.REACT_APP_API_DEVELOPMENT_SOCKET);
     const [{isPending}] = usePayPalScriptReducer();
-    const selectedPaymentMethod = useSelector((state) => state.paymentMethods.selectedPaymentMethod);
     const {auth, coupon, totalAfterDiscount, paymentMethods} = useSelector(state => ({...state}))
 
-    const [discountAmount, setDiscountAmount] = useState(0)
-    const [payable, setPayable] = useState(0)
-    const [cartTotal, setCartTotal] = useState(0)
 
-    const paypalInfoListener = useRef(null);
-    const headers = {
-        Authorization: `Bearer ${auth.user.token}`
-    };
-
-    useEffect(() => {
-        const postData = async () => {
-            const initData = {couponApplied: coupon, selectedPaymentMethod, initial: true};
-            try {
-                const response = await axios.post(`${API_URL}/user/paypal-order`, initData, {
-                    headers: {
-                        'Authorization': `Bearer ${auth.user.token}`,
-                    }
-                });
-                const {data} = response;
-                setPayable(data.payable);
-                setCartTotal(data.cartTotal);
-                setDiscountAmount(data.discountAmount);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        postData()
-    }, [auth.user.token, coupon, selectedPaymentMethod]);
-
-    function handleSubmit() {
+    const handleSubmit = () => {
         const data = {
-            shippingAddress: address,
-            couponApplied: coupon,
-            selectedPaymentMethod: paymentMethods.selectedPaymentMethod
+            shippingAddress,
+            couponApplied: coupon
         }
-        return createOrderPaypalOrderForUser(auth.user.token, data)
+        return initPaypalOrder(auth.user.token, data)
             .then(res => {
                 return res.data.id;
             }).catch(e => {
                 console.log(e.response.data.error)
             })
+    };
+
+    async function handleApprove(orderId) {
+        setDisabled(false);
+        setProcessing(true);
+        setError('');
+        setDisabled(true);
+
+        try {
+            swal.fire({
+                title: 'Saving',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                text: 'Payment processed successfully. Please wait while we save the information',
+                icon: 'info',
+                html: '<div class="lds-hourglass"></div>',
+                showConfirmButton: false
+            });
+
+            const response = await capturePaypalPayment(auth.user.token, {
+                orderId,
+                selectedPaymentMethod: paymentMethods.selectedPaymentMethod,
+                shippingAddress
+            });
+
+            const {result} = response.data;
+            const {saved} = response.data;
+            const {id, payer, purchase_units} = result;
+            const transactionId = purchase_units[0].payments.captures[0].id;
+            const transactionDate = purchase_units[0].payments.captures[0].create_time;
+            const name = payer.name.given_name + payer.name.surname;
+            const email = payer.email_address;
+            const address = payer.address.country_code;
+            const transactionAmount = purchase_units[0].payments.captures[0].amount.value;
+
+            swal.close();
+            swal.fire({
+                title: 'Transaction successful',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                text: 'Your transaction has been successfully processed',
+                icon: 'success',
+                didClose: () => {
+                    dispatch(clearMessage());
+                    dispatch(selectPaymentMethod('Mpesa'));
+                },
+                didDestroy: () => {
+                    // do something when the modal is destroyed
+                },
+                didRender: (popup) => {
+                    // do something when the modal is rendered
+                },
+                didOpen: () => {
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('cart');
+                    }
+                    dispatch(addToCart([]));
+                    dispatch(couponApplied(false));
+                    dispatch(setTotalAfterDiscount(0));
+                    emptyUserCart(auth.user.token).then(r => {
+                        console.log('CART EMPTY', r.data);
+                    });
+
+                }
+            }).then((response) => {
+                if (response.isConfirmed) {
+                    navigate(`/user/success/${purchase_units[0].payments.captures[0].id}`, {
+                        state: {
+                            transactionDate,
+                            transactionId,
+                            saved,
+                            name,
+                            email,
+                            address,
+                            transactionAmount,
+                        }
+                    });
+                }
+            });
+        } catch (e) {
+            setProcessing(false);
+            setError('Payment not successful. You can also pay with Mpesa or Cards');
+            setDisabled(false);
+            return navigate('/user/error');
+        }
     }
+
+
+    //
+    // async function handleApprove(orderId) {
+    //     setDisabled(false)
+    //     setProcessing(true)
+    //     setError('')
+    //     setDisabled(true)
+    //     swal.fire({
+    //         title:'Saving',
+    //         text: 'Payment processed successfully.Please wait while we save the information',
+    //         icon: 'info',
+    //         showConfirmButton: false
+    //     })
+    //
+    //     try {
+    //         const response = await capturePaypalPayment(auth.user.token, {
+    //             orderId,
+    //             selectedPaymentMethod: paymentMethods.selectedPaymentMethod,
+    //             shippingAddress,
+    //         })
+    //         const {result} = response.data;
+    //         const {saved} = response.data;
+    //         const {id, payer, purchase_units} = result;
+    //         const transactionId = purchase_units[0].payments.captures[0].id;
+    //         const transactionDate = purchase_units[0].payments.captures[0].create_time;
+    //         const name = payer.name.given_name + payer.name.surname;
+    //         const email = payer.email_address;
+    //         const address = payer.address.country_code;
+    //         const transactionAmount = purchase_units[0].payments.captures[0].amount.value;
+    //
+    //         swal.close()
+    //         swal.fire({
+    //             text: 'Your transaction has been successfully processed',
+    //             icon: 'success',
+    //             didClose() {
+    //             },didDestroy() {
+    //             },
+    //             didRender(popup) {
+    //             },
+    //             didOpen: () => {
+    //                 if (typeof window !== 'undefined') {
+    //                     localStorage.removeItem("cart")
+    //                 }
+    //                 dispatch(addToCart([]))
+    //                 dispatch(couponApplied(false))
+    //                 dispatch(setTotalAfterDiscount(0))
+    //                 emptyUserCart(auth.user.token).then(r => {
+    //                     console.log('CART EMPTY', r.data)
+    //                 })
+    //                 dispatch(clearMessage())
+    //                 dispatch(selectPaymentMethod('Mpesa'))
+    //             }
+    //         })
+    //             .then(response => {
+    //                 if (response.isConfirmed) {
+    //                     navigate(`/user/success/${purchase_units[0].payments.captures[0].id}`, {
+    //                         state: {
+    //                             transactionDate: transactionDate,
+    //                             transactionId: transactionId,
+    //                             saved,
+    //                             name: name,
+    //                             email: email,
+    //                             address: address,
+    //                             transactionAmount: transactionAmount,
+    //                         }
+    //                     })
+    //                 }
+    //             })
+    //     } catch (e) {
+    //         setProcessing(false)
+    //         setError('Payment not successful. you can also pay with Mpesa or Cards')
+    //         setDisabled(false)
+    //         return navigate('/user/error');
+    //     }
+    // }
+    //
+    // async function handleApprove(orderId) {
+    //     setDisabled(true);
+    //     setProcessing(true);
+    //     setError('');
+    //
+    //     try {
+    //         const response = await capturePaypalPayment(auth.user.token, {
+    //             orderId,
+    //             selectedPaymentMethod: paymentMethods.selectedPaymentMethod,
+    //             shippingAddress,
+    //         });
+    //
+    //         const {result} = response.data;
+    //         const {saved} = response.data;
+    //         const {id, payer, purchase_units} = result;
+    //         const transactionId = purchase_units[0].payments.captures[0].id;
+    //         const transactionDate = purchase_units[0].payments.captures[0].create_time;
+    //         const name = payer.name.given_name + payer.name.surname;
+    //         const email = payer.email_address;
+    //         const address = payer.address.country_code;
+    //         const transactionAmount = purchase_units[0].payments.captures[0].amount.value;
+    //
+    //         swal.fire({
+    //             title: 'Payment Processed',
+    //             text: 'Your transaction has been successfully processed',
+    //             icon: 'success',
+    //             showConfirmButton: false,
+    //             didClose() {
+    //                 setProcessing(false);
+    //                 setDisabled(false);
+    //             },
+    //             didDestroy() {
+    //                 setProcessing(false);
+    //                 setDisabled(false);
+    //             },
+    //             didRender(popup) {
+    //                 setProcessing(false);
+    //                 setDisabled(false);
+    //             },
+    //             didOpen: () => {
+    //                 if (typeof window !== 'undefined') {
+    //                     localStorage.removeItem("cart");
+    //                 }
+    //                 dispatch(addToCart([]));
+    //                 dispatch(couponApplied(false));
+    //                 dispatch(setTotalAfterDiscount(0));
+    //                 emptyUserCart(auth.user.token)
+    //                     .then(r => {
+    //                         console.log('CART EMPTY', r.data);
+    //                     });
+    //                 dispatch(clearMessage());
+    //                 dispatch(selectPaymentMethod('Mpesa'));
+    //             },
+    //         })
+    //             .then(response => {
+    //                 if (response.isConfirmed) {
+    //                     navigate(`/user/success/${transactionId}`, {
+    //                         state: {
+    //                             transactionDate,
+    //                             transactionId,
+    //                             saved,
+    //                             name,
+    //                             email,
+    //                             address,
+    //                             transactionAmount,
+    //                         },
+    //                     });
+    //                 }
+    //             });
+    //     } catch (e) {
+    //         swal.fire({
+    //             title: 'Payment Failed',
+    //             text: 'Payment not successful. You can also pay with Mpesa or cards',
+    //             icon: 'error',
+    //         });
+    //
+    //         setProcessing(false);
+    //         setError('Payment not successful. You can also pay with Mpesa or cards');
+    //         setDisabled(false);
+    //         return navigate('/user/error');
+    //     }
+    // }
 
 
     return (
@@ -79,15 +296,20 @@ const Paypal = ({address}) => {
                 payable={payable}
                 discountAmount={discountAmount}
                 cartTotal={cartTotal}
-                />
+            />
 
             <>
                 {isPending ? <p>Loading</p> : null}
+                {/*<PayPalButtons*/}
+                {/*    createOrder={handleSubmit}*/}
+                {/*    onApprove={(data) => handleApprove(data)}*/}
+                {/*/>*/}
+
                 <PayPalButtons
                     createOrder={handleSubmit}
                     onApprove={(data, actions) => {
-                        console.log('APPROVED',data)
-                        return actions.order.capture()
+                        handleApprove(data.orderID)
+                        // return actions.order.capture()
                     }}
                 />
             </>
@@ -97,4 +319,5 @@ const Paypal = ({address}) => {
     )
 
 }
-export default Paypal;
+
+export default withSwal(Paypal);

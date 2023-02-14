@@ -40,7 +40,8 @@ const Checkout = lazy(() => import( "./pages/Checkout"));
 const CreateCouponPage = lazy(() => import( "./pages/admin/coupon/CreateCouponPage"));
 const CouponUpdate = lazy(() => import( "./pages/admin/coupon/CouponUpdate"));
 const Payment = lazy(() => import( "./pages/Payment"));
-const ConfirmationPage= lazy(() => import( "./pages/ConfirmationPage"));
+const Success = lazy(() => import( "./pages/user/Success"));
+const Error = lazy(() => import( "./pages/user/Error"));
 const App = () => {
     const {user: currentUser} = useSelector((state) => state.auth);
 
@@ -59,6 +60,16 @@ const App = () => {
                     <Route path="user/history" element={
                         <UserRoute>
                             <History/>
+                        </UserRoute>
+                    }/>
+                    <Route path="user/success/:id" element={
+                        <UserRoute>
+                            <Success/>
+                        </UserRoute>
+                    }/>
+                    <Route path="user/error" element={
+                        <UserRoute>
+                            <Error/>
                         </UserRoute>
                     }/>
 
@@ -140,7 +151,7 @@ const App = () => {
                         <Checkout/>
                     }/>
 
-                     <Route path="/payment" element={
+                    <Route path="/payment" element={
                         <UserRoute>
                             <Payment/>
                         </UserRoute>

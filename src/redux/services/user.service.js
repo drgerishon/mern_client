@@ -122,8 +122,17 @@ export const initiateMPESAOderForUser = async (token, phoneNumber, coupon) => {
         }
     });
 };
-export const createPaypalOrderForUser = async (token, cashOnDelivery, coupon) => {
-    return await axios.post(`${API_URL}/user/paypal-order`, {cashOnDelivery, couponApplied: coupon}, {
+
+export const initPaypalOrder = async (token, cashOnDelivery, coupon) => {
+    return await axios.post(`${API_URL}/user/init-paypal-order`, {cashOnDelivery, couponApplied: coupon}, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+
+export const capturePaypalPayment = async (token,paymentId) => {
+    return await axios.post(`${API_URL}/user/capture-paypal-payment`, paymentId, {
         headers: {
             'Authorization': `Bearer ${token}`,
         }
