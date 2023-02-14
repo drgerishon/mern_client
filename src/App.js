@@ -62,16 +62,6 @@ const App = () => {
                             <History/>
                         </UserRoute>
                     }/>
-                    <Route path="user/success/:id" element={
-                        <UserRoute>
-                            <Success/>
-                        </UserRoute>
-                    }/>
-                    <Route path="user/error" element={
-                        <UserRoute>
-                            <Error/>
-                        </UserRoute>
-                    }/>
 
                     <Route path="user/product" element={
                         <UserRoute>
@@ -156,6 +146,17 @@ const App = () => {
                             <Payment/>
                         </UserRoute>
                     }/>
+                    <Route path="user/success/:id" element={
+                        <UserRoute>
+                            <Success/>
+                        </UserRoute>
+                    }/>
+                    <Route path="user/error" element={
+                        <UserRoute>
+                            <Error/>
+                        </UserRoute>
+                    }/>
+
 
                     {/* <Route path="/checkout" element={*/}
                     {/*    <UserRoute>*/}
