@@ -5,6 +5,7 @@
   "description": "Farm application",
   "private": true,
   "dependencies": {
+    "@david.kucsai/react-pdf-table": "^0.4.1",
     "@paypal/react-paypal-js": "^7.8.2",
     "@reduxjs/toolkit": "^1.9.1",
     "@stripe/react-stripe-js": "^1.16.4",
@@ -74,6 +75,7 @@
     "@craco/craco": "^7.0.0",
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@iconify/react": "^4.0.1",
+    "@react-pdf/renderer": "^3.1.5",
     "ajv": "^7.2.4",
     "axios": "^1.2.2",
     "compression-webpack-plugin": "^10.0.0",

@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import classes from './aside.module.css'
 import {useSelector} from "react-redux";
-import Accordion2 from "../../accordion/Accordion";
 import AdminContent from "./admin";
 import {useCurrentPath} from "../../../hooks/useCurrentPath";
 import {useLocation, useParams} from 'react-router-dom';
@@ -30,7 +29,7 @@ const Aside = ({open, handleScroll, scrolled, general}) => {
         {title: 'Update/delete a blog', to: 'crud/blogs'},
     ]
 
-    const excludedRoutes = ['/', '/shop', '/cart', '/market', '/product/:slug', '/checkout','/payment']
+    const excludedRoutes = ['/', '/shop', '/cart', '/market', '/product/:slug', '/checkout', '/payment']
 
     let toggleClasses = []
 
@@ -55,7 +54,6 @@ const Aside = ({open, handleScroll, scrolled, general}) => {
                     {currentUser.role === 'admin' && <AdminContent/>}
                 </>
                 }
-
             </ul>
 
         </aside>

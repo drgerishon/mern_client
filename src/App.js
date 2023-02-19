@@ -1,16 +1,12 @@
 import './App.css'
-import React, {lazy, Suspense, useEffect, useState} from 'react';
+import React, {lazy, Suspense} from 'react';
 import {Route, Routes} from "react-router-dom";
 import AuthLayout from "./hoc/AuthLayout";
-import {useDispatch, useSelector} from "react-redux";
-import {logout, verifyToken} from "./redux/slices/auth";
+import {useSelector} from "react-redux";
 import AuthVerify from "./common/AuthVerify";
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import History from "./pages/user/History";
-
-
-import {useOutletContext} from "react-router-dom";
 
 import GeneralPageLayout from "./hoc/GeneralPageLayout";
 
@@ -26,6 +22,7 @@ const Register = lazy(() => import( "./pages/auth/Register"));
 const UserRoute = lazy(() => import( "./components/routes/UserRoute"));
 const AdminRoute = lazy(() => import( "./components/routes/AdminRoute"));
 const AdminDashboard = lazy(() => import( "./pages/admin/AdminDashboard"));
+const WishList = lazy(() => import( "./pages/user/WishList"));
 const CategoryCreate = lazy(() => import( "./pages/admin/category/CategoryCreate"));
 const CategoryUpdate = lazy(() => import( "./pages/admin/category/CategoryUpdate"));
 const SubCreate = lazy(() => import( "./pages/admin/sub/SubCreate"));
@@ -45,9 +42,6 @@ const Success = lazy(() => import( "./pages/user/Success"));
 const Error = lazy(() => import( "./pages/user/Error"));
 const App = () => {
     const {user: currentUser, isLoggedIn} = useSelector((state) => state.auth);
-
-
-
 
 
     return (
@@ -71,6 +65,12 @@ const App = () => {
                     <Route path="user/product" element={
                         <UserRoute>
                             <UserProductCreate/>
+                        </UserRoute>
+                    }/>
+
+                    <Route path="user/wishlist" element={
+                        <UserRoute>
+                            <WishList/>
                         </UserRoute>
                     }/>
 
