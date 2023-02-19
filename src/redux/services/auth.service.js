@@ -46,15 +46,35 @@ export const currentAdmin = async (token, user) => {
     });
 };
 
+export const verifyToken = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.token) {
+        return Promise.reject("No token found");
+    }
 
-const authService = {
-    preSignup,
-    currentAdmin,
-    forgotPassword,
-    resetPassword,
-    signup,
-    login,
-    logout,
+    try {
+        const response = await axios.get(`${API_URL}/user/verifyToken`, {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        return Promise.reject();
+    }
 };
+
+
+const
+    authService = {
+        preSignup,
+        verifyToken,
+        currentAdmin,
+        forgotPassword,
+        resetPassword,
+        signup,
+        login,
+        logout,
+    };
 
 export default authService;

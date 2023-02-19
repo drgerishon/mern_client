@@ -50,7 +50,11 @@ const Cart = () => {
         userCart(cart, token)
             .then(r => {
                 if (r.data.ok) {
-                    navigate('/checkout')
+                    navigate('/checkout', {
+                        state: {
+                            from: 'cart'
+                        }
+                    })
                 }
             })
             .catch(e => {
@@ -60,20 +64,6 @@ const Cart = () => {
 
     };
 
-    // const saveCODOrderToDb = () => {
-    //     dispatch(cashOnDelivery(true))
-    //
-    //     userCart(cart, token)
-    //         .then(r => {
-    //             if (r.data.ok) {
-    //                 navigate('/checkout')
-    //             }
-    //         })
-    //         .catch(e => {
-    //             console.log(e)
-    //         })
-    //
-    // };
 
     return (
         <div className='container'>
@@ -129,7 +119,6 @@ const Cart = () => {
                     </div>
                 </div>
 
-
                 <div className="col-md-4">
                     <div className="card">
                         <div className="card-header">
@@ -159,7 +148,11 @@ const Cart = () => {
                                         {
                                             coupon ? <button
                                                 className='btn btn-sm btn-primary mt-2'
-                                                onClick={() => navigate('/checkout')}
+                                                onClick={() => navigate('/checkout', {
+                                                    state: {
+                                                        from: 'cart'
+                                                    }
+                                                })}
                                                 disabled={!cart.length}>
                                                 Proceed to checkout
                                             </button> : <button

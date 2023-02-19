@@ -1,10 +1,10 @@
 import React from 'react';
 import {Outlet} from "react-router-dom";
 import classes from './AuthLayout.module.css'
-import {useSelector} from "react-redux";
+
 
 const AuthLayout = ({login, password, register}) => {
-    const {message} = useSelector((state) => state.message);
+
     return (
         <main className={classes.Wrapper}>
             <div className="container">

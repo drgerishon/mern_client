@@ -17,7 +17,7 @@ const StripeCheckout = ({
                             address: shippingAddress,
                             swal,
                             clientSecret,
-                            setShowForm,
+
                             payable,
                             discountAmount,
                             cartTotal
@@ -56,6 +56,28 @@ const StripeCheckout = ({
             },
         };
 
+        const handleResponse = async (response) => {
+            if (response.error) {
+                throw new Error(response.error.message);
+            }
+
+            setError('');
+
+            const data = {
+                paymentIntent: response.paymentIntent,
+                selectedPaymentMethod: paymentMethods.selectedPaymentMethod,
+                shippingAddress,
+            };
+
+            const createOrderResponse = await createStripeOrderForUser(auth.user.token, data);
+
+            if (createOrderResponse.status === 200) {
+                return createOrderResponse.data;
+            }
+
+            return false;
+        };
+
 
         const handleSubmit = async (e) => {
             e.preventDefault();
@@ -79,35 +101,33 @@ const StripeCheckout = ({
                             },
                         });
 
-                        if (response.error) {
-                            throw new Error(response.error.message);
-                        }
+                        const data = await handleResponse(response);
 
-                        swal.update({
-                            title: 'Payment successful',
-                            text: 'Your payment has been received. Please wait while we save your information',
-                            icon: 'success',
-                        });
-
-                        setError('');
-                        const data = {
-                            paymentIntent: response.paymentIntent,
-                            selectedPaymentMethod: paymentMethods.selectedPaymentMethod,
-                            shippingAddress,
-                        };
-
-                        const createOrderResponse = await createStripeOrderForUser(auth.user.token, data);
-
-                        if (createOrderResponse.status === 200) {
-                            setProcessing(false);
-                            setSucceeded(true);
+                        if (data) {
+                            const transactionId = data.result.transactionId;
+                            const transactionDate = data.result.transactionDate;
+                            const name = data.result.name;
+                            const email = data.result.email;
+                            const transactionAmount = data.result.transactionAmount;
                             swal.update({
                                 title: 'Transaction successful',
                                 text: 'Your transaction has been successfully processed',
                                 icon: 'success',
                                 html: '',
                                 showConfirmButton: true,
-                            });
+                                didClose: () => {
+                                    navigate(`/user/success/${data.result.id}`, {
+                                        state: {
+                                            transactionDate,
+                                            transactionId,
+                                            saved: data.saved,
+                                            name,
+                                            email,
+                                            transactionAmount,
+                                        }
+                                    });
+                                }
+                            })
                         }
                     } catch (error) {
                         setError(error.message);
@@ -121,8 +141,22 @@ const StripeCheckout = ({
                         });
                     }
                 },
-
+            }).then(response => {
+                if (response.isConfirmed) {
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('cart');
+                    }
+                    dispatch(addToCart([]));
+                    dispatch(couponApplied(false));
+                    dispatch(setTotalAfterDiscount(0));
+                    emptyUserCart(auth.user.token).then(r => {
+                        console.log('CART EMPTY', r.data);
+                    });
+                    dispatch(clearMessage());
+                    dispatch(selectPaymentMethod('Mpesa'));
+                }
             });
+
         };
 
 

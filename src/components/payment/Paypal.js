@@ -76,7 +76,6 @@ const Paypal = ({
             const transactionDate = purchase_units[0].payments.captures[0].create_time;
             const name = payer.name.given_name + payer.name.surname;
             const email = payer.email_address;
-            const address = payer.address.country_code;
             const transactionAmount = purchase_units[0].payments.captures[0].amount.value;
 
             swal.close();
@@ -117,7 +116,6 @@ const Paypal = ({
                             saved,
                             name,
                             email,
-                            address,
                             transactionAmount,
                         }
                     });

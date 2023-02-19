@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {loadStripe} from "@stripe/stripe-js";
 import {Elements} from "@stripe/react-stripe-js";
-import {useLocation} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import '../stripe.css'
 import StripeCheckout from "../components/payment/StripeCheckout";
-import {Navigate} from 'react-router-dom';
 import {useDispatch, useSelector} from "react-redux";
 import Paypal from "../components/payment/Paypal";
 import Mpesa from "../components/payment/Mpesa";
@@ -26,6 +25,8 @@ const Payment = () => {
     const selectedPaymentMethod = useSelector((state) => state.paymentMethods.selectedPaymentMethod);
     const dispatch = useDispatch()
     const [showForm, setShowForm] = useState(true)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         dispatch(clearMessage());
@@ -54,15 +55,14 @@ const Payment = () => {
         intent: "capture",
     };
 
-
-    if (!(location.state && location.state.address)) {
-        return <Navigate to="/checkout"/>;
+    if (location.state?.from !== 'checkout') {
+        navigate('/checkout');
     }
 
 
     return (
         <div className='container min-vh-100'>
-            {showForm && <>
+            {showForm && location.state && location && <>
                 <div>
                     <div className="row">
                         <div className="col-md-8">
@@ -76,8 +76,8 @@ const Payment = () => {
                                         <Elements stripe={promise}>
                                             <StripeCheckout
                                                 address={location.state.address}
-                                                setShowForm={setShowForm}
                                                 clientSecret={stripeClientSecret}
+                                                payable={payable}
                                                 discountAmount={discountAmount}
                                                 cartTotal={cartTotal}/>
                                         </Elements>
@@ -98,7 +98,12 @@ const Payment = () => {
                                     }
                                     {
                                         selectedPaymentMethod === 'Mpesa' &&
-                                        <Mpesa address={location.state.address}/>
+                                        <Mpesa
+                                            address={location.state.address}
+                                            payable={payable}
+                                            discountAmount={discountAmount}
+                                            cartTotal={cartTotal}
+                                        />
                                     }
                                 </div>
                             </div>

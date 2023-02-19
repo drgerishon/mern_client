@@ -122,80 +122,11 @@ export const resetPassword = createAsyncThunk(
 export const logout = createAsyncThunk("auth/logout", async () => {
     await AuthService.logout();
 });
-// export const updateUserAddress = createAsyncThunk(
-//     'auth/updateUserAddress',
-//     async (info, {getState, dispatch}) => {
-//         const state = getState();
-//         const data = await saveUserAddress(info.address, info.token);
-//
-//         const existingAddress = state.auth.user.address.find(
-//             (add) => add.googlePlaceId === data.address.googlePlaceId
-//         );
-//
-//         if (existingAddress) {
-//             const index = state.auth.user.address.indexOf(existingAddress);
-//             const updatedAddress = [
-//                 ...state.auth.user.address.slice(0, index),
-//                 data.address,
-//                 ...state.auth.user.address.slice(index + 1)
-//             ];
-//             dispatch({
-//                 type: 'auth/updateAddress',
-//                 payload: {
-//                     address: updatedAddress,
-//                     addressSaved: true
-//                 }
-//             });
-//         } else {
-//             dispatch({
-//                 type: 'auth/updateAddress',
-//                 payload: {
-//                     address: [...state.auth.user.address, data.address],
-//                     addressSaved: true
-//                 }
-//             });
-//         }
-//         return data;
-//     }
-// );
-// export const updateUserAddress = createAsyncThunk(
-//     'auth/updateUserAddress',
-//     async (info, {getState, dispatch}) => {
-//         const state = getState();
-//         const data = await saveUserAddress(info.address, info.token);
-//
-//         const existingAddress = state.auth.user.address.find(
-//             (add) => add.googlePlaceId === data.address.googlePlaceId
-//         );
-//
-//         if (existingAddress) {
-//             const index = state.auth.user.address.indexOf(existingAddress);
-//             const updatedAddress = [
-//                 ...state.auth.user.address.slice(0, index),
-//                 data.address,
-//                 ...state.auth.user.address.slice(index + 1)
-//             ];
-//
-//             const updatedInfo = {
-//                 address: updatedAddress,
-//                 addressSaved: true
-//             };
-//
-//             dispatch(updateAddress(updatedInfo));
-//         } else {
-//             const updatedAddress = [...state.auth.user.address, data.address];
-//
-//             const updatedInfo = {
-//                 address: updatedAddress,
-//                 addressSaved: true
-//             };
-//
-//             dispatch(updateAddress(updatedInfo));
-//         }
-//
-//         return {data};
-//     }
-// );
+// Async thunk to check if the token is valid
+export const verifyToken = createAsyncThunk("auth/verifyToken", async () => {
+  const response = await AuthService.verifyToken();
+  return response.data;
+});
 
 export const updateUserAddress = createAsyncThunk(
     "auth/updateUserAddress",
@@ -231,82 +162,164 @@ const initialState = user ? {isLoggedIn: true, addressSaved: user.address && use
 };
 
 
+// const authSlice = createSlice({
+//     name: "auth",
+//     initialState,
+//     extraReducers: {
+//         [signup.fulfilled]: (state, action) => {
+//             state.isLoggedIn = false;
+//             state.addressSaved = false
+//             state.user = null;
+//         },
+//         [signup.rejected]: (state, action) => {
+//             state.isLoggedIn = false;
+//             state.addressSaved = false
+//             state.user = null;
+//         },
+//
+//         [updateUserAddress.fulfilled]: (state, action) => {
+//             const {address, ok} = action.payload.userInfo;
+//
+//
+//             const sortAddresses = (address) => {
+//                 return address.sort((a, b) => {
+//                     let dateA = new Date(a.updatedAt);
+//                     let dateB = new Date(b.updatedAt);
+//                     return dateB - dateA;
+//                 });
+//             };
+//
+//             if (ok) {
+//                 if (typeof window !== 'undefined') {
+//                     const existingData = JSON.parse(localStorage.getItem('user')) || {};
+//                     existingData.address = sortAddresses(address);
+//                     localStorage.setItem('user', JSON.stringify(existingData));
+//                     state.addressSaved = true;
+//                     state.user.address = [...sortAddresses(address)];
+//                 }
+//             }
+//
+//
+//         },
+//
+//         [forgotPassword.fulfilled]: (state, action) => {
+//             state.isLoggedIn = false;
+//             state.addressSaved = false
+//             state.user = null;
+//         },
+//         [forgotPassword.rejected]: (state, action) => {
+//             state.isLoggedIn = false;
+//             state.addressSaved = false
+//             state.user = null;
+//         },
+//         [resetPassword.fulfilled]: (state, action) => {
+//             state.isLoggedIn = false;
+//             state.addressSaved = false
+//             state.user = null;
+//         },
+//         [resetPassword.rejected]: (state, action) => {
+//             state.isLoggedIn = false;
+//             state.addressSaved = false
+//             state.user = null;
+//         },
+//
+//         [login.fulfilled]: (state, action) => {
+//             state.isLoggedIn = true;
+//             state.addressSaved = action.payload.user.user.address.length > 0
+//             state.user = action.payload.user.user;
+//         },
+//         [login.rejected]: (state, action) => {
+//             state.isLoggedIn = false;
+//             state.addressSaved = false
+//             state.user = null;
+//         },
+//         [logout.fulfilled]: (state, action) => {
+//             state.isLoggedIn = false;
+//             state.addressSaved = false
+//             state.user = null;
+//         },
+//     },
+// });
+
 const authSlice = createSlice({
     name: "auth",
     initialState,
-    extraReducers: {
-        [signup.fulfilled]: (state, action) => {
-            state.isLoggedIn = false;
-            state.addressSaved = false
-            state.user = null;
-        },
-        [signup.rejected]: (state, action) => {
-            state.isLoggedIn = false;
-            state.addressSaved = false
-            state.user = null;
-        },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(signup.fulfilled, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+            })
+            .addCase(signup.rejected, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+            })
+            .addCase(updateUserAddress.fulfilled, (state, action) => {
+                const {address, ok} = action.payload.userInfo;
+                const sortAddresses = (address) => {
+                    return address.sort((a, b) => {
+                        let dateA = new Date(a.updatedAt);
+                        let dateB = new Date(b.updatedAt);
+                        return dateB - dateA;
+                    });
+                };
 
-        [updateUserAddress.fulfilled]: (state, action) => {
-            const {address, ok} = action.payload.userInfo;
-
-
-            const sortAddresses = (address) => {
-                return address.sort((a, b) => {
-                    let dateA = new Date(a.updatedAt);
-                    let dateB = new Date(b.updatedAt);
-                    return dateB - dateA;
-                });
-            };
-
-            if (ok) {
-                if (typeof window !== 'undefined') {
-                    const existingData = JSON.parse(localStorage.getItem('user')) || {};
-                    existingData.address = sortAddresses(address);
-                    localStorage.setItem('user', JSON.stringify(existingData));
-                    state.addressSaved = true;
-                    state.user.address = [...sortAddresses(address)];
+                if (ok) {
+                    if (typeof window !== "undefined") {
+                        const existingData = JSON.parse(
+                            localStorage.getItem("user") || "{}"
+                        );
+                        existingData.address = sortAddresses(address);
+                        localStorage.setItem("user", JSON.stringify(existingData));
+                        state.addressSaved = true;
+                        state.user.address = [...sortAddresses(address)];
+                    }
                 }
-            }
-
-
-        },
-
-        [forgotPassword.fulfilled]: (state, action) => {
-            state.isLoggedIn = false;
-            state.addressSaved = false
-            state.user = null;
-        },
-        [forgotPassword.rejected]: (state, action) => {
-            state.isLoggedIn = false;
-            state.addressSaved = false
-            state.user = null;
-        },
-        [resetPassword.fulfilled]: (state, action) => {
-            state.isLoggedIn = false;
-            state.addressSaved = false
-            state.user = null;
-        },
-        [resetPassword.rejected]: (state, action) => {
-            state.isLoggedIn = false;
-            state.addressSaved = false
-            state.user = null;
-        },
-
-        [login.fulfilled]: (state, action) => {
-            state.isLoggedIn = true;
-            state.addressSaved = action.payload.user.user.address.length > 0
-            state.user = action.payload.user.user;
-        },
-        [login.rejected]: (state, action) => {
-            state.isLoggedIn = false;
-            state.addressSaved = false
-            state.user = null;
-        },
-        [logout.fulfilled]: (state, action) => {
-            state.isLoggedIn = false;
-            state.addressSaved = false
-            state.user = null;
-        },
+            })
+            .addCase(forgotPassword.fulfilled, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+            })
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+            })
+            .addCase(resetPassword.fulfilled, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+            })
+            .addCase(resetPassword.rejected, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+            })
+            .addCase(login.fulfilled, (state, action) => {
+                state.isLoggedIn = true;
+                state.addressSaved = action.payload.user.user.address.length > 0;
+                state.user = action.payload.user.user;
+            })
+            .addCase(login.rejected, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+            })
+            .addCase(logout.fulfilled, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+            })
+            .addCase(verifyToken.rejected, (state, action) => {
+                state.isLoggedIn = false;
+                state.addressSaved = false;
+                state.user = null;
+                localStorage.removeItem("user");
+            });
     },
 });
 

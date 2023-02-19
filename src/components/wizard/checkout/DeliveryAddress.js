@@ -2,6 +2,7 @@ import React, {useRef, useEffect, useState, useCallback} from 'react';
 import {Icon} from '@iconify/react';
 import './DeliveryAddress.css'
 import {MDBInput} from "mdb-react-ui-kit";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const DeliveryAddress = ({
                              address,
@@ -9,6 +10,7 @@ const DeliveryAddress = ({
                              searchInput,
                              findMyLocation,
                              show,
+                             state,
                              loading,
                              couponUsed,
                              setDiscountError,
@@ -17,8 +19,12 @@ const DeliveryAddress = ({
                              applyDiscountCoupon
                          }) => {
 
+    const location = useLocation();
+
 
     const showAddress = () => {
+
+
         return <>
             <div className="show-address mb-4">
                 {Object.keys(address).length > 0 && <>
@@ -99,10 +105,14 @@ const DeliveryAddress = ({
                     value={coupon}/>
                 <br/>
 
-                {couponUsed ? <button disabled={couponUsed} className='btn btn-success ' type='button' onClick={applyDiscountCoupon}>
+                {couponUsed ?
+                    <button disabled={couponUsed} className='btn btn-success ' type='button'
+                            onClick={applyDiscountCoupon}>
                         Applied
                     </button> :
-                    <button className='btn btn-primary' type='button' onClick={applyDiscountCoupon}>
+                    <button
+                        className='btn btn-primary' disabled={couponUsed && location.state.from === 'cart'}
+                        type='button' onClick={applyDiscountCoupon}>
                         Apply
                     </button>}
             </div>}

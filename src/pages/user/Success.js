@@ -23,7 +23,6 @@ const ConfirmationPage = () => {
         transactionDate,
         name,
         email,
-        address,
         transactionAmount,
     } = location.state;
 
