@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import History from "./pages/user/History";
 
 import GeneralPageLayout from "./hoc/GeneralPageLayout";
+import Orders from "./pages/user/order/Orders";
+import Order from "./pages/user/order/Order";
 
 const Layout = lazy(() => import("./hoc/Layout"));
 const ErrorPage = lazy(() => import("./pages/errorPage/404"));
@@ -71,6 +73,16 @@ const App = () => {
                     <Route path="user/wishlist" element={
                         <UserRoute>
                             <WishList/>
+                        </UserRoute>
+                    }/>
+                    <Route path="user/orders" element={
+                        <UserRoute>
+                            <Orders/>
+                        </UserRoute>
+                    }/>
+                    <Route path="user/order/:id" element={
+                        <UserRoute>
+                            <Order/>
                         </UserRoute>
                     }/>
 

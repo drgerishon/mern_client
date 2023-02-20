@@ -26,6 +26,8 @@ const login = (data) => {
         .post(API_URL + "/signin", data)
         .then((response) => {
             if (response.data.user.token) {
+
+                console.log(response.data.user.token)
                 localStorage.setItem("user", JSON.stringify(response.data.user));
             }
             return response.data;

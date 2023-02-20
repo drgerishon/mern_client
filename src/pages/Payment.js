@@ -21,11 +21,11 @@ const Payment = () => {
     const [discountAmount, setDiscountAmount] = useState(0)
     const [processing, setProcessing] = useState(false)
     const {auth, coupon, totalAfterDiscount, paymentMethods} = useSelector(state => ({...state}))
-    const location = useLocation()
+
     const selectedPaymentMethod = useSelector((state) => state.paymentMethods.selectedPaymentMethod);
     const dispatch = useDispatch()
     const [showForm, setShowForm] = useState(true)
-
+    const location = useLocation()
     const navigate = useNavigate()
 
     useEffect(() => {

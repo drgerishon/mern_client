@@ -124,8 +124,8 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 });
 // Async thunk to check if the token is valid
 export const verifyToken = createAsyncThunk("auth/verifyToken", async () => {
-  const response = await AuthService.verifyToken();
-  return response.data;
+    const response = await AuthService.verifyToken();
+    return response.data;
 });
 
 export const updateUserAddress = createAsyncThunk(
@@ -301,7 +301,8 @@ const authSlice = createSlice({
             })
             .addCase(login.fulfilled, (state, action) => {
                 state.isLoggedIn = true;
-                state.addressSaved = action.payload.user.user.address.length > 0;
+
+                state.addressSaved = action.payload.user.user.address && action.payload.user.user.address.length > 0;
                 state.user = action.payload.user.user;
             })
             .addCase(login.rejected, (state, action) => {

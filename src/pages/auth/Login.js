@@ -98,6 +98,8 @@ const Login = ({swal}) => {
 
 
     const roleBasedRedirect = (res) => {
+
+
         swal.fire({
             text: 'Operation completed successfully',
             icon: 'success',
@@ -166,12 +168,16 @@ const Login = ({swal}) => {
         dispatch(login(formData))
             .unwrap()
             .then((res) => {
+
+                console.log('KUFU')
                 setLoading(false)
                 setErrored(false)
                 roleBasedRedirect(res.user)
 
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log(e)
+
                 setErrored(true)
                 setSuccess(false)
                 setLoading(false)
@@ -277,25 +283,25 @@ const Login = ({swal}) => {
 
                 </>
 
-                 {
-                        message && Array.isArray(message) ? message.map(m => {
-                            return <div className="col-12 " key={m.param}>
-                                <div
-                                    className={"text-danger "}
-                                    role="alert"
-                                >
-                                    {m.msg}
-                                </div>
-                            </div>
-                        }) : <div className="col-12 ">
+                {
+                    message && Array.isArray(message) ? message.map(m => {
+                        return <div className="col-12 " key={m.param}>
                             <div
-                                className={ "text-danger "}
+                                className={"text-danger "}
                                 role="alert"
                             >
-                                {message}
+                                {m.msg}
                             </div>
                         </div>
-                    }
+                    }) : <div className="col-12 ">
+                        <div
+                            className={"text-danger "}
+                            role="alert"
+                        >
+                            {message}
+                        </div>
+                    </div>
+                }
             </form>
 
         );

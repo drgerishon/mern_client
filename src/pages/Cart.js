@@ -4,8 +4,6 @@ import {Link, useNavigate} from 'react-router-dom'
 import ProductCardInCheckout from "../components/cards/ProductCardInCheckout";
 import {userCart} from "../redux/services/user.service";
 import {Icon} from '@iconify/react';
-import {setTotalAfterDiscount} from "../redux/slices/totalAfterDiscount";
-import {couponApplied} from "../redux/slices/coupon";
 
 const Cart = () => {
     const {cart, auth, coupon} = useSelector((state) => ({...state}))
