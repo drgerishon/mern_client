@@ -8,7 +8,7 @@ import SubsList from "../components/subs/SubsList";
 const Home = () => {
 
     return (
-        <div className={'container-fluid'}>
+        <section>
             <Jumbotron text={['New arrivals', "Quality Products", 'Discounted Prices', "24/7 Support"]}/>
             <h2 className='text-center  p-2 my-3 ' style={{background: '#f3f5fa'}}>
                 New Arrivals
@@ -30,7 +30,7 @@ const Home = () => {
                 <h2>Sub Categories</h2>
             </h2>
             <SubsList/>
-        </div>
+        </section>
     );
 };
 
