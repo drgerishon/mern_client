@@ -57,7 +57,7 @@ const App = () => {
             <ToastContainer/>
             <Routes>
                 <Route path="/" element={<Layout/>}>
-                    <Route index element={<Home/>}/>
+
                     <Route path="user/history" element={
                         <UserRoute>
                             <History/>
@@ -145,6 +145,7 @@ const App = () => {
                     <Route path="auth/password/reset/:token" element={<PasswordReset/>}/>
                 </Route>
                 <Route element={<GeneralPageLayout/>}>
+                    <Route index element={<Home/>}/>
                     <Route path="/market" element={
                         <Market/>
                     }/>

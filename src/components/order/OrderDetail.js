@@ -6,7 +6,7 @@ import ModalImage from "react-modal-image";
 import defaultImage from "../../images/default.jpg";
 
 const OrderDetail = ({order}) => {
-    const {orderId, products, amount, orderDate} = order
+    const {orderId, products, amount, paymentMethod, orderDate} = order
 
 
     return (
@@ -44,9 +44,7 @@ const OrderDetail = ({order}) => {
                         <div className="row">
 
                             {products.map(product => {
-                                console.log(product)
-
-                                return <div className="col-lg-6">
+                                return <div className="col-lg-6" key={product.product._id}>
                                     <div className="member d-flex align-items-start" data-aos="zoom-in"
                                          data-aos-delay="100">
                                         <div className="pic">
@@ -74,8 +72,55 @@ const OrderDetail = ({order}) => {
                         </div>
                     </div>
                 </div>
-                <div className="card">
-                    
+                <div className="row gy-0">
+                    <div className="col-md-6">
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className='text-black'>PAYMENT INFORMATION</h5>
+                            </div>
+                            <div className="card-body">
+                                <p className='fs-6 py-2'>
+                                    <strong>Payment Method</strong> <br/>
+                                    {paymentMethod.toUpperCase()}
+                                </p>
+                                <br/>
+
+                                <p className=''>
+                                    <strong>Payment Details</strong> <br/>
+                                    Items total: {(amount).toLocaleString('en-US', {
+                                    style: 'currency', currency: `${order.currencyCode}`
+                                })} <br/>
+                                    Delivery Fees: <br/>
+                                    Total: {(amount).toLocaleString('en-US', {
+                                    style: 'currency', currency: `${order.currencyCode}`
+                                })}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6">
+                        <div className="card">
+                            <div className="card-header">
+                                <h5 className='text-black'>DELIVERY INFORMATION</h5>
+                            </div>
+                            <div className="card-body">
+                                <p className='py-2'>
+                                    <strong>Delivery Method</strong> <br/>
+                                    Pick-up Station
+                                    <br/>
+
+
+                                    <strong>Opening Hours</strong>: <br/>
+                                    Mon-Fri 9am to 6pm; Sat 0800hrs - 1300hrs <br/>
+
+
+                                    <strong>Shipping Details</strong> <br/>
+                                    Pickup Station.Fulfilled by name <br/>
+                                    Delivery scheduled on 01 December
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
