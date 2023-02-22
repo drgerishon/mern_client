@@ -30,7 +30,7 @@ const Checkout = () => {
 
 
     const {auth, cart, coupon: couponUsed, message, totalAfterDiscount} = useSelector((state) => ({...state}));
-    const [address, setAddress] = useState(auth.user.address.length > 0 ? auth.user.address[0] : {});
+    const [address, setAddress] = useState(auth.user.address && auth.user.address.length > 0 ? auth.user.address[0] : {});
     const token = auth.isLoggedIn && auth.user.token && auth.user.token
     const navigate = useNavigate()
     const location = useLocation();
