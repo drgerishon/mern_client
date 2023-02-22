@@ -1,20 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import {getCategory} from "../../redux/services/categories";
 import {useParams} from "react-router-dom";
 import ProductCard from "../../components/cards/ProductCard";
+import {getSub} from "../../redux/services/sub.service";
 
 
-const CategoryHome = () => {
+const SubHome = () => {
     const {slug} = useParams()
-    const [category, setCategory] = useState({})
+
+    const [sub, setSub] = useState({})
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(false)
+
     useEffect(() => {
         setLoading(true)
-        getCategory(slug).then(r => {
-
-            console.log(r)
-            setCategory(r.data.category)
+        getSub(slug).then(r => {
+            setSub(r.data.sub)
             setProducts(r.data.products)
             setLoading(false)
         }).catch(e => {
@@ -32,8 +32,9 @@ const CategoryHome = () => {
                             <p>loading</p>
                         </h4> :
                         <h4 className='p-3 text-center  fw-bold my-5' style={{background: '#f3f5fa'}}>
-                            {products.length} products in {category.name} category
+                            {products.length} products in {sub.name} sub cat
                         </h4>
+
                     }
 
                 </div>
@@ -56,4 +57,4 @@ const CategoryHome = () => {
     );
 };
 
-export default CategoryHome;
+export default SubHome;

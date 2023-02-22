@@ -46,32 +46,34 @@ const NewArrivals = () => {
 
 
     return (
-        <div className={'container'}>
-            <div className="row">
-                {products.map(product => <div
-                        className='col-lg-4 col-md-6 mb-3'
-                        key={product._id}>
-                        <ProductCard
-                            product={product}
-                            loading={loading}
-                        />
-                    </div>
-                )}
-            </div>
-            <div className="text-center mt-3">
-                <Suspense fallback={<div>Loading...</div>}>
-                    <Pagination
-                        current={page}
-                        total={(Math.ceil(productsCount / 3) * 10)}
-                        onChange={(value) => {
-                            setPage(value)
-                        }}/>
-                </Suspense>
+        <section>
+            <div className={'container'}>
+                <div className="row">
+                    {products.map(product => <div
+                            className='col-lg-3 col-md-6 mb-3'
+                            key={product._id}>
+                            <ProductCard
+                                product={product}
+                                loading={loading}
+                            />
+                        </div>
+                    )}
+                </div>
+                <div className="text-center mt-3">
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <Pagination
+                            current={page}
+                            total={Math.ceil(productsCount / 4) * 10}
+                            onChange={(value) => {
+                                setPage(value)
+                            }}/>
+                    </Suspense>
+
+                </div>
+
 
             </div>
-
-
-        </div>
+        </section>
     );
 };
 

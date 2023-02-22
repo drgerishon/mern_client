@@ -12,6 +12,8 @@
     --color-secondary: #1b2f45;
     --color-yellow: #faa307;
     --color-yellow1: #ffbf00;
+    --color-green: #01e37f;
+
 }
 
 /* Smooth scroll behavior */
@@ -26,6 +28,7 @@ body {
 
     font-family: var(--font-default);
     color: var(--color-default);
+
 }
 
 a {
@@ -49,46 +52,13 @@ h6 {
 }
 
 
-/*--------------------------------------------------------------
-# Sections & Section Header
---------------------------------------------------------------*/
-/*.section {*/
-/*    overflow: hidden;*/
-/*    padding: 80px 0;*/
-/*}*/
-
-/*.section-header {*/
-/*    text-align: center;*/
-/*    padding-bottom: 30px;*/
-/*}*/
-
-/*.section-header h2 {*/
-/*    font-size: 32px;*/
-/*    font-weight: 600;*/
-/*    margin-bottom: 20px;*/
-/*    padding-bottom: 20px;*/
-/*    position: relative;*/
-/*}*/
-
-/*.section-header h2:after {*/
-/*    content: "";*/
-/*    position: absolute;*/
-/*    display: block;*/
-/*    width: 60px;*/
-/*    height: 2px;*/
-/*    background: var(--color-primary);*/
-/*    left: 0;*/
-/*    right: 0;*/
-/*    bottom: 0;*/
-/*    margin: auto;*/
-/*}*/
-
-/*.section-header p {*/
-/*    margin-bottom: 0;*/
-/*}*/
 section, .section {
     overflow: hidden;
     padding: 60px 0;
+}
+
+.section-bg {
+    background-color: #f3f5fa;
 }
 
 .section-header {

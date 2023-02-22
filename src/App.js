@@ -12,6 +12,8 @@ import GeneralPageLayout from "./hoc/GeneralPageLayout";
 import Orders from "./pages/user/order/Orders";
 import Order from "./pages/user/order/Order";
 
+const CategoryHome = lazy(() => import( "./pages/category/CategoryHome"));
+const SubHome = lazy(() => import( "./pages/sub/SubHome"));
 const Layout = lazy(() => import("./hoc/Layout"));
 const ErrorPage = lazy(() => import("./pages/errorPage/404"));
 const ErrorLayout = lazy(() => import("./hoc/ErrorLayout"));
@@ -152,6 +154,12 @@ const App = () => {
                     <Route path="/product/:slug" element={
                         <Product/>
                     }/>
+                    <Route path="category/:slug" element={
+                        <CategoryHome/>
+                    }/>
+                    <Route path="sub/:slug" element={
+                        <SubHome/>
+                    }/>
                     <Route path="/cart" element={
                         <Cart/>
                     }/>
@@ -196,3 +204,19 @@ const App = () => {
 };
 
 export default App;
+
+// import React from 'react';
+// import Mega from "./components/nav/mega/Mega";
+//
+// const App = () => {
+//             return (
+//                 <>
+//                         <Mega/>
+//
+//
+//                 </>
+//             );
+//     }
+// ;
+//
+// export default App;

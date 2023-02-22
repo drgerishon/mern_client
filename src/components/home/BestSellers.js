@@ -56,7 +56,7 @@ const BestSellers = () => {
             <div className="row">
 
                 {products.map(product => <div
-                        className='col-lg-4 col-md-6 mb-3'
+                        className='col-lg-3 col-md-6 mb-3'
                         key={product._id}>
                         <ProductCard
                             product={product}
@@ -66,7 +66,7 @@ const BestSellers = () => {
                 )}
             </div>
             <div className="row">
-                <div className="  text-center pt-2 p-2">
+                <div className="text-center pt-2 p-2">
                     <Suspense fallback={<div>Loading...</div>}>
                         <Pagination
                             current={page}

@@ -6,31 +6,21 @@ import CategoryList from "../components/category/CategoryList";
 import SubsList from "../components/subs/SubsList";
 
 const Home = () => {
-
     return (
-        <section>
+        <>
             <Jumbotron text={['New arrivals', "Quality Products", 'Discounted Prices', "24/7 Support"]}/>
-            <h2 className='text-center  p-2 my-3 ' style={{background: '#f3f5fa'}}>
-                New Arrivals
-            </h2>
+
             <NewArrivals/>
-            <br/>
 
-            <h2 className='text-center  p-2 my-3 ' style={{background: '#f3f5fa'}}>
-                Best Sellers
-            </h2>
-            <BestSellers/>
 
-            <h2 className='text-center  p-2 my-3 ' style={{background: '#f3f5fa'}}>
-                <h2>Categories</h2>
-            </h2>
+            {/*<BestSellers/>*/}
+
+
             <CategoryList/>
 
-            <h2 className='text-center  p-2 my-3 ' style={{background: '#f3f5fa'}}>
-                <h2>Sub Categories</h2>
-            </h2>
+
             <SubsList/>
-        </section>
+        </>
     );
 };
 

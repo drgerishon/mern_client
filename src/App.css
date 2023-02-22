@@ -32,13 +32,14 @@
 }
 
 .card-title span, .label-title {
-    color: #899bbd ;
+    color: #899bbd;
     font-size: 14px !important;
     font-weight: 400 !important;
 }
-.card-text{
-   color: #282828 !important;
-    font-size: 13px!important;
+
+.card-text {
+    color: #282828 !important;
+    font-size: 13px !important;
 }
 
 .card-body {
@@ -49,13 +50,19 @@
     background-color: rgba(255, 255, 255, 0.6) !important;
 }
 
+.card-hoverable:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
+}
+
 .disabledBtn {
     /*cursor: not-allowed;*/
-    
+
 
 }
+
 .disabledBtn:hover {
-  cursor: not-allowed!important;
+    cursor: not-allowed !important;
 }
 
 .hidden {
@@ -96,41 +103,44 @@
 }
 
 .breadcrumb .active {
-    color: #51678f!important;
+    color: #51678f !important;
     font-weight: 600;
 }
+
 .breadcrumb .active::first-letter {
     text-transform: uppercase;
 }
 
 .lds-hourglass {
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
 }
+
 .lds-hourglass:after {
-  content: " ";
-  display: block;
-  border-radius: 50%;
-  width: 0;
-  height: 0;
-  margin: 8px;
-  box-sizing: border-box;
-  border: 32px solid #294a70;
-  border-color: #294a70 transparent #294a70 transparent;
-  animation: lds-hourglass 1.2s infinite;
+    content: " ";
+    display: block;
+    border-radius: 50%;
+    width: 0;
+    height: 0;
+    margin: 8px;
+    box-sizing: border-box;
+    border: 32px solid #294a70;
+    border-color: #294a70 transparent #294a70 transparent;
+    animation: lds-hourglass 1.2s infinite;
 }
+
 @keyframes lds-hourglass {
-  0% {
-    transform: rotate(0);
-    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-  }
-  50% {
-    transform: rotate(900deg);
-    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-  }
-  100% {
-    transform: rotate(1800deg);
-  }
+    0% {
+        transform: rotate(0);
+        animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    }
+    50% {
+        transform: rotate(900deg);
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    100% {
+        transform: rotate(1800deg);
+    }
 }

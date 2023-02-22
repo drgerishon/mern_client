@@ -155,38 +155,6 @@ const ProductCard = ({
         <>
             {showCard()}
 
-            {/*<div className="card card-product-grid card-lg">*/}
-            {/*    <div className="img-wrap">*/}
-            {/*        <img*/}
-            {/*            src={product.images && product.images.length ? product.images[0].url : defaultImage}*/}
-            {/*            className="img-fluid"*/}
-            {/*            alt={product.title}*/}
-            {/*        />*/}
-            {/*    </div>*/}
-
-            {/*    <div className="card-body">*/}
-            {/*        <h5 className="card-title">{product.title}</h5>*/}
-            {/*        <p className="card-text">{`${product.description && product.description.substring(0, 40)}...`}</p>*/}
-            {/*        <div className='bottom-wrap'/>*/}
-            {/*        <div className='d-flex justify-content-between'>*/}
-
-            {/*            <Link to={`/admin/product/${product.slug}`}>*/}
-            {/*                <Icon*/}
-            {/*                    icon="ant-design:edit-outlined"*/}
-            {/*                    className='text-warning'*/}
-            {/*                    cursor='pointer'*/}
-            {/*                    fontSize={25}/>*/}
-            {/*            </Link>*/}
-
-            {/*            <Icon*/}
-            {/*                icon="ant-design:delete-outlined"*/}
-            {/*                className='text-danger'*/}
-            {/*                fontSize={25}*/}
-            {/*                cursor='pointer'*/}
-            {/*                onClick={() => handleRemove(product.slug)}/>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
         </>
 
 
