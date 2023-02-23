@@ -7,8 +7,8 @@ import defaultImage from "../../images/default.jpg";
 const ShowPaymentInfo = ({order, showStatus = true}) => {
 
 
-    return (
 
+    return (
         <div className="container withRibbon mt-3 mt-md-5">
             <div className="card" data-label={order.orderStatus}>
 

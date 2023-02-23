@@ -10,14 +10,12 @@ import {setTotalAfterDiscount} from "../../redux/slices/totalAfterDiscount";
 import {withSwal} from "react-sweetalert2";
 import {clearMessage} from "../../redux/slices/message";
 import PayCard from "./Card";
-import axios from "axios";
 
 
 const StripeCheckout = ({
                             address: shippingAddress,
                             swal,
                             clientSecret,
-
                             payable,
                             discountAmount,
                             cartTotal
