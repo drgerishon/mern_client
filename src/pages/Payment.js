@@ -101,6 +101,7 @@ const Payment = () => {
                                         <Mpesa
                                             address={location.state.address}
                                             payable={payable}
+                                            coupon={coupon}
                                             discountAmount={discountAmount}
                                             cartTotal={cartTotal}
                                         />

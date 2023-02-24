@@ -11,7 +11,6 @@ import {withSwal} from "react-sweetalert2";
 import {io} from 'socket.io-client';
 import {toast} from "react-toastify";
 import {addToCart} from "../../redux/slices/cart";
-import {couponApplied} from "../../redux/slices/coupon";
 import {setTotalAfterDiscount} from "../../redux/slices/totalAfterDiscount";
 import {selectPaymentMethod} from "../../redux/slices/paymentMethods";
 import {useNavigate} from "react-router-dom";
@@ -41,7 +40,7 @@ const initialValues = {
     formIsValid: false
 }
 
-const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
+const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discountAmount}) => {
         const {auth, coupon, totalAfterDiscount, message, paymentMethods} = useSelector(state => ({...state}));
         const [loading, setLoading] = useState(false);
         const [succeeded, setSucceed] = useState(false);
@@ -64,13 +63,14 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
             const name = data.result.name;
             const email = data.result.email;
             const transactionAmount = data.result.transactionAmount;
-
-
             swal.fire({
                 title: 'Transaction successful',
                 text: 'Your transaction has been successfully processed',
                 icon: 'success',
                 html: '',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                backdrop: 'rgba(0,0,0,0.9)',
                 showConfirmButton: true,
                 didOpen: () => {
                     setSucceed(true);
@@ -93,12 +93,13 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
                     dispatch(selectPaymentMethod('Mpesa'));
                 },
                 didClose() {
-                    navigate(`/user/success/${data.result.id}`, {
+                    navigate(`/user/success/${data.result.transactionId}`, {
                         state: {
                             transactionDate,
                             transactionId,
                             saved: data.saved,
                             name,
+                            mpesa: true,
                             email,
                             transactionAmount,
                         }
@@ -107,7 +108,7 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
             }).then(r => {
                 swal.close()
             })
-        }, [auth.user.token, dispatch, navigate, swal]);
+        }, [auth.user.token, couponApplied, dispatch, navigate, swal]);
 
         const handlePaymentError = useCallback((error) => {
                 setError(true);
@@ -155,6 +156,7 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
             try {
                 const res = await initiateMPESAOderForUser(auth.user.token, {
                     phoneNumber: mobile,
+                    couponApplied,
                     selectedPaymentMethod: paymentMethods.selectedPaymentMethod,
                     shippingAddress: address,
                 }, coupon);
@@ -248,6 +250,17 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
                         />
                     ))}
 
+                    <div className='col-12'>
+
+                        <p>
+                            <strong className='fs-2'>Disclaimer</strong> <br/>
+                            <em className='text-danger small'>To test this part, you have to use a real phone number.
+                                If you authorize the transaction,the amount that will be deducted from your Mpesa
+                                is <strong>Ksh 1</strong> regardless of cart total.The money will be send to safaricom
+                                daraja API.
+                                I dont know if its refundable.</em>
+                        </p>
+                    </div>
                     <div className='col-12'>
                         <MDBBtn
                             type='submit'

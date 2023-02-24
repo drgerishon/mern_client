@@ -8,6 +8,7 @@ import {clearMessage} from '../../redux/slices/message';
 import {Icon} from '@iconify/react';
 import dayjs from 'dayjs';
 
+require('dayjs/locale/en');
 const ConfirmationPage = () => {
     const location = useLocation();
     const dispatch = useDispatch();
@@ -31,11 +32,16 @@ const ConfirmationPage = () => {
     const date2 = dayjs(location.state.saved.deliveryEndDate).format('MMMM D, YYYY');
 
     const td = new Date(transactionDate);
-    const formattedDate = dayjs()
+    let formattedDate = dayjs()
         .startOf('month')
         .add(1, 'day')
         .set('year', td.getFullYear())
         .format('YYYY-MM-DD HH:mm:ss');
+    if (location.state.mpesa) {
+        formattedDate = dayjs(transactionDate.toString(), 'YYYYMMDDHHmmss').locale('en').format('MMMM D, YYYY');;
+    }
+    console.log(typeof transactionDate)
+    console.log('Formated',formattedDate)
 
     return (
         <div className='row'>
