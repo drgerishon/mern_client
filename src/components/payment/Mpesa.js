@@ -124,21 +124,16 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
 
         useEffect(() => {
             const socket = io(process.env.REACT_APP_API_DEVELOPMENT_SOCKET);
+            setSocket(socket);
             socket.on("mpesaPaymentFailed", handlePaymentError);
             socket.on("mpesaPaymentSuccess", handlePaymentSuccess);
+
             return () => {
                 socket.off("mpesaPaymentFailed", handlePaymentError);
                 socket.off("mpesaPaymentSuccess", handlePaymentSuccess);
-            };
-        }, [handlePaymentError, handlePaymentSuccess, socket]);
-
-        useEffect(() => {
-            const socket = io(process.env.REACT_APP_API_DEVELOPMENT_SOCKET);
-            setSocket(socket);
-            return () => {
                 socket.disconnect();
             };
-        }, []);
+        }, [handlePaymentError, handlePaymentSuccess]);
 
 
         const initiatePayment = async (e) => {
