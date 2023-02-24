@@ -9,6 +9,12 @@ import {createStripeOrderForUser, emptyUserCart, initiateMPESAOderForUser} from 
 import {clearMessage, setMessage} from "../../redux/slices/message";
 import {withSwal} from "react-sweetalert2";
 import {io} from 'socket.io-client';
+import {toast} from "react-toastify";
+import {addToCart} from "../../redux/slices/cart";
+import {couponApplied} from "../../redux/slices/coupon";
+import {setTotalAfterDiscount} from "../../redux/slices/totalAfterDiscount";
+import {selectPaymentMethod} from "../../redux/slices/paymentMethods";
+import {useNavigate} from "react-router-dom";
 
 const Card = lazy(() => import("antd").then(module => ({default: module.Card})));
 
@@ -40,32 +46,78 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
         const [loading, setLoading] = useState(false);
         const [succeeded, setSucceed] = useState(false);
         const [processing, setProcessing] = useState(false);
-        const [paymentError, setPaymentError] = useState(false);
-        const [initiating, setInitiating] = useState(false);
-        const [initiatingError, setInitiatingError] = useState(false);
+
+        const [error, setError] = useState(false);
         const [socket, setSocket] = useState(null);
         const dispatch = useDispatch();
         const [values, setValues] = useState(initialValues);
+        const navigate = useNavigate()
 
         useEffect(() => {
             dispatch(clearMessage());
         }, [dispatch]);
 
         const handlePaymentSuccess = useCallback((data) => {
-            setSucceed(true);
-            dispatch(setMessage(data.paymentResponseMpesa.ResultDesc))
-            setProcessing(false)
-            setLoading(false)
-        }, [dispatch]);
+
+            const transactionId = data.result.transactionId;
+            const transactionDate = data.result.transactionDate;
+            const name = data.result.name;
+            const email = data.result.email;
+            const transactionAmount = data.result.transactionAmount;
+
+
+            swal.fire({
+                title: 'Transaction successful',
+                text: 'Your transaction has been successfully processed',
+                icon: 'success',
+                html: '',
+                showConfirmButton: true,
+                didOpen: () => {
+                    setSucceed(true);
+                    dispatch(setMessage(data.result.ResultDesc))
+                    setProcessing(false)
+                    setLoading(false)
+                    toast.success(`Payment successful`, {
+                        position: toast.POSITION.BOTTOM_RIGHT
+                    });
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('cart');
+                    }
+                    dispatch(addToCart([]));
+                    dispatch(couponApplied(false));
+                    dispatch(setTotalAfterDiscount(0));
+                    emptyUserCart(auth.user.token).then(r => {
+                        console.log('CART EMPTY', r.data);
+                    });
+                    dispatch(clearMessage());
+                    dispatch(selectPaymentMethod('Mpesa'));
+                },
+                didClose() {
+                    navigate(`/user/success/${data.result.id}`, {
+                        state: {
+                            transactionDate,
+                            transactionId,
+                            saved: data.saved,
+                            name,
+                            email,
+                            transactionAmount,
+                        }
+                    });
+                }
+            }).then(r => {
+                swal.close()
+            })
+        }, [auth.user.token, dispatch, navigate, swal]);
 
         const handlePaymentError = useCallback((error) => {
-                setPaymentError(error);
+                setError(true);
                 dispatch(setMessage(error.ResultDesc))
                 setSucceed(false)
                 setProcessing(false)
                 setLoading(false)
-
-
+                toast.error(`Payment failed `, {
+                    position: toast.POSITION.BOTTOM_RIGHT
+                });
             },
             [dispatch]);
 
@@ -91,7 +143,7 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
         const initiatePayment = async (e) => {
             e.preventDefault();
             setLoading(true);
-            setInitiating(true)
+            setError(false)
             dispatch(setMessage('Initiating the transaction'))
             const value = values.mpesaPhone.phone.value;
             let mobile = value.replace(/ /g, '');
@@ -106,16 +158,13 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
                     selectedPaymentMethod: paymentMethods.selectedPaymentMethod,
                     shippingAddress: address,
                 }, coupon);
-
                 if (res.data.ok) {
-                    setInitiating(false)
                     setProcessing(true)
-                    setInitiatingError('')
+                    setError(false)
                     dispatch(setMessage('Please check your phone to authorize the transaction'))
                 }
             } catch (error) {
-                setInitiating(false)
-                setInitiatingError(error.response.data.error.errorMessage)
+                setError(true)
                 dispatch(setMessage(error.response.data.error.errorMessage))
                 setLoading(false)
             }
@@ -148,6 +197,7 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
 
             setValues({mpesaPhone: updatedLoginForm, formIsValid: formIsValid});
         }
+
 
         return (
             <div className='py-5'>
@@ -202,7 +252,7 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
                         <MDBBtn
                             type='submit'
                             className='btn btn-primary  w-100'
-                            disabled={loading || !values.formIsValid}
+                            disabled={loading || !values.formIsValid || succeeded}
                         >
                             {loading ? (
                                 <>
@@ -211,23 +261,30 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
                                 </>) : ('Pay now')}
                         </MDBBtn>
                     </div>
-                    {!succeeded && !loading && (
-                        <div className='col-12'>
-                            <p className='text-danger'>{message.message}</p>
+
+                    {error && message.message && (
+                        <div className="col-12">
+                            <div className="alert alert-danger" role="alert">
+                                <span><strong>{message.message}</strong></span>
+                            </div>
+                        </div>
+                    )}
+                    {!error && !succeeded && message.message && (
+                        <div className="col-12">
+                            <div className="alert alert-info" role="alert">
+                                <span><strong>{message.message}</strong></span>
+                            </div>
                         </div>
                     )}
 
-                    {loading && (
-                        <div className='col-12'>
-                            <p className='text-info'>{message.message}</p>
+                    {succeeded && message.message && (
+                        <div className="col-12">
+                            <div className="alert alert-success" role="alert">
+                                {message.message}
+                            </div>
                         </div>
                     )}
 
-                    {succeeded && !loading && (
-                        <div className='col-12'>
-                            <p className='text-success'>{message.message}</p>
-                        </div>
-                    )}
                 </form>
             </div>
         );
@@ -235,4 +292,3 @@ const Mpesa = ({address, payable, swal, cartTotal, discountAmount}) => {
 ;
 
 export default withSwal(Mpesa);
-
