@@ -17,30 +17,30 @@ import {useNavigate} from "react-router-dom";
 
 const Card = lazy(() => import("antd").then(module => ({default: module.Card})));
 
-const initialValues = {
-    mpesaPhone: {
-        phone: {
-            elementType: 'input',
-            elementConfig: {
-                type: 'tel',
-                name: 'phone',
-                required: true,
-                label: 'Phone number*'
-            },
-            value: '',
-            validation: {
-                required: true,
-                isPhoneNumber: true
-            },
-            validationMessage: [],
-            valid: false,
-            touched: false
-        },
-    },
-    formIsValid: false
-}
 
 const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discountAmount}) => {
+        const initialValues = {
+            mpesaPhone: {
+                phone: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'tel',
+                        name: 'phone',
+                        required: true,
+                        label: 'Phone number*'
+                    },
+                    value: '',
+                    validation: {
+                        required: true,
+                        isPhoneNumber: true
+                    },
+                    validationMessage: [],
+                    valid: false,
+                    touched: false
+                },
+            },
+            formIsValid: false
+        }
         const {auth, coupon, totalAfterDiscount, message, paymentMethods} = useSelector(state => ({...state}));
         const [socket, setSocket] = useState(null);
         const dispatch = useDispatch();
@@ -56,10 +56,13 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
 
         const {succeeded, loading, error, processing} = paymentStatus
         useEffect(() => {
-            dispatch(clearMessage());
+            return () => {
+                dispatch(clearMessage());
+            };
         }, [dispatch]);
 
         const handlePayment = useCallback((success, data) => {
+
             if (success) {
                 const transactionId = data.result.transactionId;
                 const transactionDate = data.result.transactionDate;
@@ -81,9 +84,7 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                         toast.success(`Payment successful`, {
                             position: toast.POSITION.BOTTOM_RIGHT
                         });
-                        if (typeof window !== 'undefined') {
-                            localStorage.removeItem('cart');
-                        }
+                        localStorage.removeItem('cart');
                         dispatch(addToCart([]));
                         dispatch(couponApplied(false));
                         dispatch(setTotalAfterDiscount(0));
@@ -118,7 +119,6 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
             }
         }, [auth.user.token, couponApplied, dispatch, navigate, paymentStatus, swal]);
 
-
         useEffect(() => {
             const socket = io(process.env.REACT_APP_API_DEVELOPMENT_SOCKET);
             socket.on("mpesaPaymentFailed", (error) => handlePayment(false, error));
@@ -129,18 +129,15 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
             };
         }, [handlePayment]);
 
-
         const initiatePayment = async (e) => {
             e.preventDefault();
-            setPaymentStatus({...paymentStatus, loading: true, error: false});
-            dispatch(setMessage('Initiating the transaction'))
+            setPaymentStatus({...paymentStatus, loading: true, processing: false, error: false});
+            dispatch(clearMessage());
             const value = values.mpesaPhone.phone.value;
-            let mobile = value.replace(/ /g, '');
-
+            let mobile = value.replace(/\s/g, '');
             if (value.charAt(0) === '0') {
                 mobile = mobile.substring(1);
             }
-
             try {
                 const res = await initiateMPESAOderForUser(auth.user.token, {
                     phoneNumber: mobile,
@@ -155,7 +152,6 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
             } catch (error) {
                 setPaymentStatus({...paymentStatus, loading: false, error: true});
                 dispatch(setMessage(error.response.data.error.errorMessage))
-
             }
         };
 
@@ -167,6 +163,7 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                     elementType={config.elementType}
                     elementConfig={config.elementConfig}
                     value={config.value}
+                    disabled={loading || succeeded || processing}
                     message={config.validationMessage}
                     invalid={!config.valid}
                     shouldValidate={config.validation}
@@ -189,13 +186,9 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                 [inputIdentifier]: updatedFormElement
             });
 
-            let formIsValid = true;
-
-            for (let inputIdentifier in updatedLoginForm) {
-                formIsValid = updatedLoginForm[inputIdentifier].valid && formIsValid;
-            }
-
+            const formIsValid = Object.values(updatedLoginForm).every(input => input.valid);
             setValues({mpesaPhone: updatedLoginForm, formIsValid: formIsValid});
+
         }
 
 
@@ -247,16 +240,22 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                     <div className='col-12'>
                         <MDBBtn
                             type='submit'
-                            className='btn btn-primary  w-100'
-                            disabled={loading || !values.formIsValid || succeeded}
+                            className='btn btn-primary w-100'
+                            disabled={loading || !values.formIsValid || succeeded || processing}
                         >
-                            {loading ? (
+                            {loading || processing ? (
                                 <>
                                     <MDBSpinner size='sm' role='status' tag='span' className='me-2'/>
-                                    Loading...
-                                </>) : ('Pay now')}
+                                    Processing...
+                                </>
+                            ) : error ? (
+                                'Try again'
+                            ) : (
+                                'Pay now'
+                            )}
                         </MDBBtn>
                     </div>
+
 
                     {error && message.message && (
                         <div className="col-12">
@@ -265,7 +264,7 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                             </div>
                         </div>
                     )}
-                    {!error && !succeeded && message.message && (
+                    {!error && !succeeded && processing && message.message && (
                         <div className="col-12">
                             <div className="alert alert-info" role="alert">
                                 <span><strong>{message.message}</strong></span>

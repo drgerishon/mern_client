@@ -10,6 +10,7 @@ const Input = ({
                    message,
                    id,
                    feedback,
+                   disabled,
                    value,
                    className,
                    changed,
@@ -27,7 +28,7 @@ const Input = ({
                 required
                 id={id}
                 {...elementConfig}
-
+                disabled={disabled}
                 value={value}
                 onChange={changed}/>;
             break;
@@ -37,6 +38,7 @@ const Input = ({
                     id={id}
                     className='mb-3'
                     {...elementConfig}
+                    disabled={disabled}
                     checked={value === true}
                     value={value}
                     onChange={changed}/>;
@@ -45,6 +47,7 @@ const Input = ({
             inputElement =
                 <DatePicker
                     id={id}
+                    disabled={disabled}
                     dropDownMode="select"
                     className='mb-3 form-control'
                     {...elementConfig}
@@ -54,6 +57,7 @@ const Input = ({
         case ('textarea'):
             inputElement = <MDBTextArea
                 id={id}
+                disabled={disabled}
                 className='mb-3'
                 {...elementConfig}
                 value={value}
@@ -65,6 +69,7 @@ const Input = ({
                     className='mb-3 form-control'
                     value={value}
                     id={id}
+                    disabled={disabled}
                     onChange={changed}>
                     {elementConfig.options.map(option => (
                         <option key={option.value} value={option.value}>
@@ -78,7 +83,7 @@ const Input = ({
             inputElement = <MDBInput
                 className='mb-3'
                 id={id}
-
+                disabled={disabled}
                 {...elementConfig}
                 value={value}
                 onChange={changed}/>;
