@@ -42,16 +42,19 @@ const initialValues = {
 
 const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discountAmount}) => {
         const {auth, coupon, totalAfterDiscount, message, paymentMethods} = useSelector(state => ({...state}));
-        const [loading, setLoading] = useState(false);
-        const [succeeded, setSucceed] = useState(false);
-        const [processing, setProcessing] = useState(false);
-
-        const [error, setError] = useState(false);
         const [socket, setSocket] = useState(null);
         const dispatch = useDispatch();
         const [values, setValues] = useState(initialValues);
         const navigate = useNavigate()
 
+        const [paymentStatus, setPaymentStatus] = useState({
+            loading: false,
+            succeeded: false,
+            processing: false,
+            error: false
+        });
+
+        const {succeeded, loading, error, processing} = paymentStatus
         useEffect(() => {
             dispatch(clearMessage());
         }, [dispatch]);
@@ -73,10 +76,8 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                     backdrop: 'rgba(0,0,0,0.9)',
                     showConfirmButton: true,
                     didOpen: () => {
-                        setSucceed(true);
                         dispatch(setMessage(data.result.ResultDesc))
-                        setProcessing(false)
-                        setLoading(false)
+                        setPaymentStatus({...paymentStatus, succeeded: true, loading: false, processing: false});
                         toast.success(`Payment successful`, {
                             position: toast.POSITION.BOTTOM_RIGHT
                         });
@@ -109,16 +110,13 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                     swal.close()
                 });
             } else {
-                setError(true);
                 dispatch(setMessage(data.ResultDesc))
-                setSucceed(false)
-                setProcessing(false)
-                setLoading(false)
+                setPaymentStatus({...paymentStatus, processing: false, succeeded: false, loading: false, error: true});
                 toast.error(`Payment failed `, {
                     position: toast.POSITION.BOTTOM_RIGHT
                 });
             }
-        }, [auth.user.token, couponApplied, dispatch, navigate, swal]);
+        }, [auth.user.token, couponApplied, dispatch, navigate, paymentStatus, swal]);
 
 
         useEffect(() => {
@@ -134,8 +132,7 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
 
         const initiatePayment = async (e) => {
             e.preventDefault();
-            setLoading(true);
-            setError(false)
+            setPaymentStatus({...paymentStatus, loading: true, error: false});
             dispatch(setMessage('Initiating the transaction'))
             const value = values.mpesaPhone.phone.value;
             let mobile = value.replace(/ /g, '');
@@ -152,14 +149,13 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                     shippingAddress: address,
                 }, coupon);
                 if (res.data.ok) {
-                    setProcessing(true)
-                    setError(false)
+                    setPaymentStatus({...paymentStatus, processing: true, error: false});
                     dispatch(setMessage('Please check your phone to authorize the transaction'))
                 }
             } catch (error) {
-                setError(true)
+                setPaymentStatus({...paymentStatus, loading: false, error: true});
                 dispatch(setMessage(error.response.data.error.errorMessage))
-                setLoading(false)
+
             }
         };
 

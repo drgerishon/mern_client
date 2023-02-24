@@ -154,7 +154,6 @@ const Login = ({swal}) => {
         });
     }
 
-
     const handleSubmit = (event) => {
         event.preventDefault()
         setLoading(true)
@@ -168,8 +167,6 @@ const Login = ({swal}) => {
         dispatch(login(formData))
             .unwrap()
             .then((res) => {
-
-                console.log('KUFU')
                 setLoading(false)
                 setErrored(false)
                 roleBasedRedirect(res.user)
