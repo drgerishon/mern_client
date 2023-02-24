@@ -56,84 +56,80 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
             dispatch(clearMessage());
         }, [dispatch]);
 
-        const handlePaymentSuccess = useCallback((data) => {
-
-            const transactionId = data.result.transactionId;
-            const transactionDate = data.result.transactionDate;
-            const name = data.result.name;
-            const email = data.result.email;
-            const transactionAmount = data.result.transactionAmount;
-            swal.fire({
-                title: 'Transaction successful',
-                text: 'Your transaction has been successfully processed',
-                icon: 'success',
-                html: '',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                backdrop: 'rgba(0,0,0,0.9)',
-                showConfirmButton: true,
-                didOpen: () => {
-                    setSucceed(true);
-                    dispatch(setMessage(data.result.ResultDesc))
-                    setProcessing(false)
-                    setLoading(false)
-                    toast.success(`Payment successful`, {
-                        position: toast.POSITION.BOTTOM_RIGHT
-                    });
-                    if (typeof window !== 'undefined') {
-                        localStorage.removeItem('cart');
-                    }
-                    dispatch(addToCart([]));
-                    dispatch(couponApplied(false));
-                    dispatch(setTotalAfterDiscount(0));
-                    emptyUserCart(auth.user.token).then(r => {
-                        console.log('CART EMPTY', r.data);
-                    });
-                    dispatch(clearMessage());
-                    dispatch(selectPaymentMethod('Mpesa'));
-                },
-                didClose() {
-                    navigate(`/user/success/${data.result.transactionId}`, {
-                        state: {
-                            transactionDate,
-                            transactionId,
-                            saved: data.saved,
-                            name,
-                            mpesa: true,
-                            email,
-                            transactionAmount,
+        const handlePayment = useCallback((success, data) => {
+            if (success) {
+                const transactionId = data.result.transactionId;
+                const transactionDate = data.result.transactionDate;
+                const name = data.result.name;
+                const email = data.result.email;
+                const transactionAmount = data.result.transactionAmount;
+                swal.fire({
+                    title: 'Transaction successful',
+                    text: 'Your transaction has been successfully processed',
+                    icon: 'success',
+                    html: '',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    backdrop: 'rgba(0,0,0,0.9)',
+                    showConfirmButton: true,
+                    didOpen: () => {
+                        setSucceed(true);
+                        dispatch(setMessage(data.result.ResultDesc))
+                        setProcessing(false)
+                        setLoading(false)
+                        toast.success(`Payment successful`, {
+                            position: toast.POSITION.BOTTOM_RIGHT
+                        });
+                        if (typeof window !== 'undefined') {
+                            localStorage.removeItem('cart');
                         }
-                    });
-                }
-            }).then(r => {
-                swal.close()
-            })
-        }, [auth.user.token, couponApplied, dispatch, navigate, swal]);
-
-        const handlePaymentError = useCallback((error) => {
+                        dispatch(addToCart([]));
+                        dispatch(couponApplied(false));
+                        dispatch(setTotalAfterDiscount(0));
+                        emptyUserCart(auth.user.token).then(() => {
+                            console.log('CART EMPTY');
+                        });
+                        dispatch(clearMessage());
+                        dispatch(selectPaymentMethod('Mpesa'));
+                    },
+                    didClose() {
+                        navigate(`/user/success/${data.result.transactionId}`, {
+                            state: {
+                                transactionDate,
+                                transactionId,
+                                saved: data.saved,
+                                name,
+                                mpesa: true,
+                                email,
+                                transactionAmount,
+                            }
+                        });
+                    }
+                }).then(() => {
+                    swal.close()
+                });
+            } else {
                 setError(true);
-                dispatch(setMessage(error.ResultDesc))
+                dispatch(setMessage(data.ResultDesc))
                 setSucceed(false)
                 setProcessing(false)
                 setLoading(false)
                 toast.error(`Payment failed `, {
                     position: toast.POSITION.BOTTOM_RIGHT
                 });
-            },
-            [dispatch]);
+            }
+        }, [auth.user.token, couponApplied, dispatch, navigate, swal]);
+
 
         useEffect(() => {
             const socket = io(process.env.REACT_APP_API_DEVELOPMENT_SOCKET);
+            socket.on("mpesaPaymentFailed", (error) => handlePayment(false, error));
+            socket.on("mpesaPaymentSuccess", (data) => handlePayment(true, data));
             setSocket(socket);
-            socket.on("mpesaPaymentFailed", handlePaymentError);
-            socket.on("mpesaPaymentSuccess", handlePaymentSuccess);
-
             return () => {
-                socket.off("mpesaPaymentFailed", handlePaymentError);
-                socket.off("mpesaPaymentSuccess", handlePaymentSuccess);
                 socket.disconnect();
             };
-        }, [handlePaymentError, handlePaymentSuccess]);
+        }, [handlePayment]);
 
 
         const initiatePayment = async (e) => {
@@ -166,12 +162,7 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                 setLoading(false)
             }
         };
-        // const formElementsArray = Object.entries(values.mpesaPhone).map(([id, config]) => {
-        //     return {
-        //         id,
-        //         config,
-        //     };
-        // });
+
 
         const formElementsArray = Object.values(values.mpesaPhone).map(config => {
             return (
