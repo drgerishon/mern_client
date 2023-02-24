@@ -130,7 +130,7 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                 socket.off("mpesaPaymentFailed", handlePaymentError);
                 socket.off("mpesaPaymentSuccess", handlePaymentSuccess);
             };
-        }, [handlePaymentError, handlePaymentSuccess]);
+        }, [handlePaymentError, handlePaymentSuccess, socket]);
 
         useEffect(() => {
             const socket = io(process.env.REACT_APP_API_DEVELOPMENT_SOCKET);
@@ -171,11 +171,27 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                 setLoading(false)
             }
         };
-        const formElementsArray = Object.entries(values.mpesaPhone).map(([id, config]) => {
-            return {
-                id,
-                config,
-            };
+        // const formElementsArray = Object.entries(values.mpesaPhone).map(([id, config]) => {
+        //     return {
+        //         id,
+        //         config,
+        //     };
+        // });
+
+        const formElementsArray = Object.values(values.mpesaPhone).map(config => {
+            return (
+                <Input
+                    key={config.elementConfig.name}
+                    elementType={config.elementType}
+                    elementConfig={config.elementConfig}
+                    value={config.value}
+                    message={config.validationMessage}
+                    invalid={!config.valid}
+                    shouldValidate={config.validation}
+                    touched={config.touched}
+                    changed={(event) => handleChange(event, config.elementConfig.name)}
+                />
+            );
         });
 
 
@@ -234,22 +250,7 @@ const Mpesa = ({address, payable, swal, cartTotal, coupon: couponApplied, discou
                 </div>
 
                 <form className='row g-3' onSubmit={initiatePayment}>
-                    {formElementsArray.map(({config, id}) => (
-                        <Input
-                            key={id}
-                            id={id}
-                            className='col-12'
-                            elementType={config.elementType}
-                            elementConfig={config.elementConfig}
-                            value={config.value}
-                            message={config.validationMessage}
-                            invalid={!config.valid}
-                            shouldValidate={config.validation}
-                            touched={config.touched}
-                            changed={(event) => handleChange(event, id)}
-                        />
-                    ))}
-
+                    {formElementsArray}
                     <div className='col-12'>
 
                         <p>
