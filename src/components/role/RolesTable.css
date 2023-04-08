@@ -1,0 +1,33 @@
+.custom-table .ant-table {
+  border-radius: 8px;
+}
+
+.custom-table .ant-table-thead > tr > th {
+  background-color: #f5f7f9;
+  font-weight: bold;
+}
+
+.custom-table .ant-table-tbody > tr:hover {
+  background-color: #e6f7ff;
+}
+
+.actions-column {
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+.view-button .anticon {
+  color: #1890ff;
+}
+
+.edit-button .anticon {
+  color: #faad14;
+}
+
+.delete-button .anticon {
+  color: #f5222d;
+}

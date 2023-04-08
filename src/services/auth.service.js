@@ -26,8 +26,7 @@ const login = (data) => {
         .post(API_URL + "/signin", data)
         .then((response) => {
             if (response.data.user.token) {
-
-                console.log(response.data.user.token)
+                console.log('USER', response.data)
                 localStorage.setItem("user", JSON.stringify(response.data.user));
             }
             return response.data;
@@ -42,6 +41,13 @@ const logout = () => {
 
 export const currentAdmin = async (token, user) => {
     return await axios.post(`${API_URL}/current-admin`, user, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
+    });
+};
+export const currentUser = async (token, user) => {
+    return await axios.post(`${API_URL}/current-user`, user, {
         headers: {
             'Authorization': `Bearer ${token}`,
         }

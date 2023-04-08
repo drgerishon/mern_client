@@ -1,46 +1,46 @@
 import React from 'react';
-import './top.css'
-import {Icon} from '@iconify/react';
-import {Link, useNavigate} from "react-router-dom";
-import {useSelector} from "react-redux";
+import Slider from 'react-slick';
+import './top.css';
 
 const Top = () => {
-    const {user} = useSelector((state) => state.auth);
-    const navigate = useNavigate()
-
-
-    function toSeller() {
-        if (user && user.token) {
-            navigate('/user/product')
-        } else {
-            navigate('/auth/login', {state: {from: `/user/product`}});
-        }
-
-    }
+    const settings = {
+        dots: false,
+        infinite: true,
+        speed: 500,
+        vertical: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        arrows: false,
+        adaptiveHeight: true,
+        className: 'slider',
+    };
+    const slidesData = [
+        {text: 'Agricultural Marketplace - Fresh Produce Delivered Daily!'},
+        {text: 'Sign up now and get 10% off your first order!'},
+        {text: 'Discover local farmers and support sustainable agriculture!'},
+        {text: 'Find high-quality organic products at competitive prices!'},
+        {text: 'Easy and secure online shopping with fast delivery!'},
+        {text: 'Join our community and learn about the latest farming trends and innovations!'},
+    ];
 
     return (
-        <section className="d-flex align-items-center topbar">
-            <div className="container-fluid d-flex justify-content-center justify-content-md-between">
-                <div className="contact-info d-flex align-items-center ">
-                    <span className=" d-flex align-items-center" onClick={toSeller}>
-                        <Icon icon="ic:round-sell" fontSize={16}/>
-                       Seller center
-                    </span>
-                    <span className='mx-2'>|</span>
-                    <span className="d-flex align-items-center ">
-                        <Icon icon="ic:file-download" fontSize={16}/>
-                        <Link to='/' className='text-white pointer'>Download App</Link>
-                    </span>
-
-                </div>
-                <div className="contact-info d-none d-md-flex align-items-center">
-                    <span>Track order</span>
-                    <span>Help Center</span>
-                </div>
+        <section className="topbar">
+            <div className="container">
+                <Slider {...settings}>
+                    {slidesData.map((slide, index) => (
+                        <div key={index} className="slide d-flex justify-content-between align-items-center">
+                            <div className="text-banner">
+                                <p>{slide.text}</p>
+                            </div>
+                            <button className="cta-button">Learn More</button>
+                        </div>
+                    ))}
+                </Slider>
             </div>
         </section>
-    )
-        ;
+    );
 };
 
 export default Top;

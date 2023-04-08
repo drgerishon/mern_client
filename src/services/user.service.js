@@ -81,6 +81,8 @@ export const getUserOrders = async (token) => {
     });
 };
 
+
+
 export const getWishList = async (token) => {
     return await axios.get(`${API_URL}/user/wishlist`, {
         headers: {

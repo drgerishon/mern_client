@@ -1,26 +1,18 @@
 import {useState} from 'react';
 import {useIdleTimer} from 'react-idle-timer';
 
-export default function useIdle({onIdle, idleTime = 1}) {
+export default function useIdle({idleTime = 1}) {
     const [isIdle, setIsIdle] = useState(false);
-
-    const handleOnIdle = (event) => {
+    const handleOnIdle = () => {
         setIsIdle(true);
-        console.log('User is idle', event);
-        console.log('Last active', getLastActiveTime());
-        onIdle();
     };
-
-    const {getRemainingTime, getLastActiveTime} = useIdleTimer({
+    useIdleTimer({
         timeout: 1000 * 60 * idleTime,
         onIdle: handleOnIdle,
         debounce: 500,
     });
 
     return {
-        getRemainingTime,
-        getLastActiveTime,
         isIdle,
     };
 }
-

@@ -2,7 +2,7 @@ import React from 'react';
 import {useSelector, useDispatch} from "react-redux";
 import {Link, useNavigate} from 'react-router-dom'
 import ProductCardInCheckout from "../components/cards/ProductCardInCheckout";
-import {userCart} from "../redux/services/user.service";
+import {userCart} from "../services/user.service";
 import {Icon} from '@iconify/react';
 
 const Cart = () => {

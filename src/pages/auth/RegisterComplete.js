@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate, useParams, Navigate, Link} from "react-router-dom";
 import {jwtDecode} from "../../common/Decode";
-import message, {clearMessage} from "../../redux/slices/message";
+import  {clearMessage} from "../../redux/slices/message";
 import {signup} from "../../redux/slices/auth";
 import {MDBBtn, MDBSpinner} from "mdb-react-ui-kit";
 

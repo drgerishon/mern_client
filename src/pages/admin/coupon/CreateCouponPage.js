@@ -2,7 +2,7 @@ import Auth from "../../../components/wrappers/Auth";
 import React, {useCallback, Suspense, useEffect, useState} from 'react';
 import {useSelector, useDispatch} from "react-redux";
 import "react-datepicker/dist/react-datepicker.css";
-import {createCoupon, getCoupons, removeCoupon} from "../../../redux/services/coupon.service";
+import {createCoupon, getCoupons, removeCoupon} from "../../../services/coupon.service";
 import {toast} from "react-toastify";
 import {Icon} from '@iconify/react';
 

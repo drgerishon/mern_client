@@ -1,120 +1,193 @@
 import React from 'react';
-import {MDBCheckbox, MDBInput, MDBTextArea} from "mdb-react-ui-kit";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
+import DatePicker from 'react-date-picker';
+import Select from 'react-select';
+import PropTypes from 'prop-types';
+import {Icon} from '@iconify/react';
 
 const Input = ({
                    elementType,
                    elementConfig,
+                   label,
                    message,
                    id,
                    feedback,
                    disabled,
                    value,
+                   required,
                    className,
+                   wrapperClassName,
                    changed,
                    invalid,
                    shouldValidate,
-                   touched
+                   touched,
+                   selectedOption,
+                   passwordVisible,
+                   togglePasswordVisibility
                }) => {
     let inputElement = null;
 
 
     switch (elementType) {
-        case ('input'):
-            inputElement = <MDBInput
-                className={`mb-3 `}
-                required
-                id={id}
-                {...elementConfig}
-                disabled={disabled}
-                value={value}
-                onChange={changed}/>;
+        case 'password':
+            inputElement = (
+                <div className="input-group">
+                    <input
+                        type={passwordVisible ? 'text' : 'password'}
+                        className={`form-control ${className}`}
+                        required
+                        id={id}
+                        {...elementConfig}
+                        disabled={disabled}
+                        value={value}
+                        onChange={changed}
+                    />
+                    <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={togglePasswordVisibility}
+                    >
+                        {passwordVisible ? (
+                            <Icon icon="ph:eye-slash-thin"/>
+                        ) : (
+                            <Icon icon="ph:eye"/>
+                        )}
+                    </button>
+                </div>
+            );
             break;
-        case ('checkbox'):
-            inputElement =
-                <MDBCheckbox
-                    id={id}
-                    className='mb-3'
-                    {...elementConfig}
-                    disabled={disabled}
-                    checked={value === true}
-                    value={value}
-                    onChange={changed}/>;
+        case 'checkbox':
+            inputElement = (
+                <div className="form-check">
+                    <input
+                        className={`form-check-input ${className}`}
+                        type="checkbox"
+                        id={id}
+                        {...elementConfig}
+                        disabled={disabled}
+                        checked={value === true}
+                        value={value}
+                        onChange={changed}
+                    />
+                    {elementConfig.label && (
+                        <span>
+                    {elementConfig.label} {required && <span className="text-danger">*</span>}
+                </span>
+                    )}
+                </div>
+            );
             break;
-        case ('date'):
-            inputElement =
+
+        case 'date':
+            inputElement = (
                 <DatePicker
                     id={id}
                     disabled={disabled}
-                    dropDownMode="select"
-                    className='mb-3 form-control'
+                    className={`form-control ${className}`}
                     {...elementConfig}
-                    selected={value}
-                    onChange={changed}/>
-            break;
-        case ('textarea'):
-            inputElement = <MDBTextArea
-                id={id}
-                disabled={disabled}
-                className='mb-3'
-                {...elementConfig}
-                value={value}
-                onChange={changed}/>;
-            break;
-        case ('select'):
-            inputElement = (
-                <select
-                    className='mb-3 form-control'
                     value={value}
+                    onChange={changed}
+                />
+            );
+            break;
+        case 'textarea':
+            inputElement = (
+                <textarea
+                    className={`form-control ${className}`}
                     id={id}
                     disabled={disabled}
-                    onChange={changed}>
-                    {elementConfig.options.map(option => (
-                        <option key={option.value} value={option.value}>
-                            {option.display}
-                        </option>
-                    ))}
-                </select>
+                    {...elementConfig}
+                    value={value}
+                    onChange={changed}
+                />
+            );
+            break;
+        case 'select':
+            inputElement = (
+                <Select
+                    id={id}
+                    value={selectedOption || value}
+                    className="basic-single"
+                    classNamePrefix="select"
+                    defaultValue={elementConfig.options && elementConfig.options[1]}
+                    isDisabled={disabled}
+                    options={elementConfig.options}
+                    onChange={changed}
+                />
             );
             break;
         default:
-            inputElement = <MDBInput
-                className='mb-3'
-                id={id}
-                disabled={disabled}
-                {...elementConfig}
-                value={value}
-                onChange={changed}/>;
-    }
-    let msg = []
-
-
-    if (invalid && touched && shouldValidate) {
-        if (message) {
-            msg = message
-        }
-
+            inputElement = (
+                <input
+                    className={`form-control ${className}`}
+                    id={id}
+                    disabled={disabled}
+                    {...elementConfig}
+                    value={value}
+                    onChange={changed}
+                />
+            );
     }
 
+    const showError = invalid && touched && shouldValidate;
 
     return (
+        <div className={`mb-3 ${wrapperClassName}`}>
+            {elementType !== 'checkbox' && label && (
+                <label htmlFor={id} className={showError ? 'text-danger' : ''}>
+                    {label} {required && <span className="text-danger">*</span>}
+                </label>
+            )}
 
-        <div className={className}>
             {inputElement}
-
-
-            {msg && msg.length > 0 ? <>
-                <div className='text-danger small mt-3'>{`${msg}`}</div>
-
-            </> : ''}
-            {feedback && <div className='text-danger small mt-3'>{feedback}</div>}
-
+            {showError && message && (
+                <ul className="text-danger small mt-1">
+                    {message.map((errMsg, index) => (
+                        <li key={index}>{errMsg}</li>
+                    ))}
+                </ul>
+            )}
+            {feedback && <div className="text-danger small mt-1">{feedback}</div>}
         </div>
-
-
     );
+
+};
+
+Input.propTypes = {
+    elementType: PropTypes.string.isRequired,
+    elementConfig: PropTypes.object,
+    label: PropTypes.string,
+    message: PropTypes.arrayOf(PropTypes.string),
+    id: PropTypes.string.isRequired,
+    feedback: PropTypes.string,
+    disabled: PropTypes.bool,
+    value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+        PropTypes.bool,
+        PropTypes.object,
+    ]),
+    className: PropTypes.string,
+    wrapperClassName: PropTypes.string,
+    changed: PropTypes.func,
+    invalid: PropTypes.bool,
+    shouldValidate: PropTypes.bool,
+    touched: PropTypes.bool,
+};
+
+Input.defaultProps = {
+    elementConfig: {},
+    label: '',
+    message: '',
+    feedback: '',
+    disabled: false,
+    value: '',
+    className: '',
+    wrapperClassName: '',
+    changed: () => {
+    },
+    invalid: false,
+    shouldValidate: false,
+    touched: false,
 };
 
 export default Input;

@@ -4,27 +4,31 @@ import './ProductCard.css'
 import {showAverageRating} from "../../common/rating/rating";
 import {Link, useNavigate} from "react-router-dom";
 import {MDBBtn} from "mdb-react-ui-kit";
-import _ from 'lodash'
 import Tooltip from "../Tooltip/Tooltip";
-import {useSelector, useDispatch} from "react-redux";
+import {useDispatch} from "react-redux";
 import {addToCart} from "../../redux/slices/cart";
 import {setVisible} from "../../redux/slices/drawer";
 import {toast} from "react-toastify";
 import {setTotalAfterDiscount} from "../../redux/slices/totalAfterDiscount";
 import {couponApplied} from "../../redux/slices/coupon";
+import {getCartFromLocalStorage} from "../../common/cart/getCartFronLocalStorage";
+import PropTypes from 'prop-types';
+
+import {Icon} from '@iconify/react';
+
 
 const ProductCard = ({
                          product,
-                         market,
-                         variant1,
+                         singleBtn,
                          btn1Clicked,
                          btn2Clicked,
-                         variant2,
                          btnCaption1,
                          btnCaption2,
                      }) => {
 
-    const {description, images, slug, price, title} = product
+
+    const {description, images, slug, price, title, category, rating, quantity} = product;
+
     const [tooltip, seTooltip] = useState('Click to add')
     const [showTooltip, setShowTooltip] = useState(false)
     const dispatch = useDispatch()
@@ -55,110 +59,136 @@ const ProductCard = ({
     )
 
     function handleCart() {
-        let cart = [];
-        if (typeof window !== 'undefined') {
-            if (localStorage.getItem('cart')) {
-                cart = JSON.parse(localStorage.getItem('cart'));
-            }
+        let cart = getCartFromLocalStorage();
+        console.log('clicked')
+        // Check if product is already in the cart
+        const productIndex = cart.findIndex(item => item._id === product._id);
 
-            // Check if product is already in the cart
-            const productIndex = cart.findIndex(item => item._id === product._id);
-
-            if (productIndex === -1) {
-                // Product not found, add it with count 1
-                cart.push({...product, count: 1});
-            } else {
-                // Product found, increment count
-                cart[productIndex].count++;
-            }
-
-            dispatch(setTotalAfterDiscount(0));
-            dispatch(couponApplied(false));
-            localStorage.setItem('cart', JSON.stringify(cart));
-            seTooltip('Added');
-            dispatch(addToCart(cart));
-            dispatch(setVisible(true));
-            toast(<Msg/>, {
-                position: toast.POSITION.BOTTOM_CENTER,
-                className: 'toast-message',
-                hideProgressBar: true,
-                closeButton: false
-            });
+        if (productIndex === -1) {
+            // Product not found, add it with count 1
+            cart.push({...product, count: 1});
+        } else {
+            // Product found, increment count
+            cart[productIndex].count++;
         }
 
+        dispatch(setTotalAfterDiscount(0));
+        dispatch(couponApplied(false));
+        localStorage.setItem('cart', JSON.stringify(cart));
+        seTooltip('Added');
+        dispatch(addToCart(cart));
+        dispatch(setVisible(true));
+        toast(<Msg/>, {
+            position: toast.POSITION.BOTTOM_CENTER,
+            className: 'toast-message',
+            hideProgressBar: true,
+            closeButton: false
+        });
+
+
     }
 
-    function showCard() {
-        return <div className="card product-card p-2">
-            <Link to={`/product/${slug}`}>
-                <div className="img-wrap">
-                    <img
-                        className='img-fluid'
-                        src={product.images && product.images.length ? product.images[0].url : defaultImage}
-                        alt={product.title}/>
-                </div>
+    const CardImage = ({product}) => (
+        <img
+            className='img-fluid'
+            src={product.images && product.images.length ? product.images[0].url : defaultImage}
+            alt={product.title}
+        />
+    );
 
-                <div className="card-body">
-                    <div className="d-flex justify-content-between align-items-center">
-                        <div className='d-flex flex-column'>
-                            <span className="title">{product.title} </span>
-                            <span className="rated">{product.category ? product.category.name : 'Uncategorized'} </span>
-                        </div>
-                        <div>
-                            <div className="d-flex flex-column align-items-end">
-                                {showAverageRating(product)}
-                                <span className="rated">Rated {product.rating.length}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="bottom-wrap-payment">
-                    <div className="info-wrap">
-                        <p className="card-text">{`${description && description.substring(0, 60)}...`}</p>
-                        <span className="title "><strong>KSh {product.price}</strong></span>
-                    </div>
-                </div>
-            </Link>
-            <div className="card-footer pb-0">
-                <div className="d-flex justify-content-between">
-                    {!market && btnCaption1 &&
-                    <MDBBtn className={`btn btn-${variant1} `} onClick={btn1Clicked}>{btnCaption1}</MDBBtn>
-                    }
-                    {!market && btnCaption2 &&
-                    <MDBBtn
-                        className={`btn btn-${variant2}`}
-                        onClick={btn2Clicked}> {btnCaption2}
-                    </MDBBtn>
-                    }
+    const CardCategory = ({category}) => (
+        <span className="product-catagory">{category ? category.name : 'Uncategorized'}</span>
+    );
 
-                    {market &&
-                    <Tooltip show={showTooltip} text={tooltip}>
-                        <button
-                            onMouseEnter={handleTooltipShow}
-                            onMouseLeave={handleHideTooltip}
-                            disabled={product.quantity < 1}
-                            className={product.quantity <= 0 ? 'btn btn-block btn-secondary  disabledBtn  ' : 'btn btn-primary btn-block'}
-                            onClick={handleCart}> {product.quantity <= 0 ? 'Out of stock' : 'Add to cart'}
-                        </button>
-                    </Tooltip>
-                    }
-                </div>
-            </div>
+    const CardTitle = ({title}) => (
+        <span><a href="">{title}</a></span>
+    );
+    const Rating = ({product}) => (
+        <span className='product-rating'> {showAverageRating(product)}</span>
+    );
 
+    const CardDescription = ({description}) => (
+        <p>{`${description && description.substring(0, 60)}...`}</p>
+    );
+
+    const CardPrice = ({price}) => (
+        <div className="product-price"><small>$96.00</small>${price}</div>
+    );
+
+    function handleHeartClick() {
+
+    }
+
+    const CardLinks = () => (
+        <div className="product-links">
+            <span onClick={handleHeartClick} className="icon-link">
+                <Icon icon="mdi:cards-heart-outline"/>
+            </span>
+            <span onClick={handleCart} className="icon-link">
+                <Icon icon="ic:round-add-shopping-cart"/>
+            </span>
         </div>
+    );
 
-
-    }
 
     return (
 
-        <>
-            {showCard()}
+        <div className="product-card">
+            <div className="badge">Hot</div>
+            <div className="product-tumb">
+                <Link to={`/product/${slug}`}>
+                    <CardImage product={product}/>
+                </Link>
+            </div>
+            <div className="product-details">
+                <Link to={`/category/${category.slug}`}>
+                    <CardCategory category={product.category}/>
+                </Link>
+                <Link to={`/product/${slug}`}>
+                    <div className='d-flex align-items-center justify-content-between title '>
+                        <CardTitle title={product.title}/>
+                        <Rating product={product}/>
+                    </div>
+                    <CardDescription description={product.description}/>
 
-        </>
+                </Link>
+                <div className="product-bottom-details">
+                    <CardPrice price={product.price}/>
+                    <CardLinks/>
+                </div>
+            </div>
+        </div>
 
 
     );
+};
+ProductCard.propTypes = {
+    product: PropTypes.shape({
+        description: PropTypes.string,
+        images: PropTypes.array,
+        slug: PropTypes.string.isRequired,
+        price: PropTypes.number.isRequired,
+        title: PropTypes.string.isRequired,
+        category: PropTypes.shape({
+            name: PropTypes.string,
+        }),
+        rating: PropTypes.array,
+        quantity: PropTypes.number,
+    }).isRequired,
+    singleBtn: PropTypes.bool,
+    btn1Clicked: PropTypes.func,
+    btn2Clicked: PropTypes.func,
+    btnCaption1: PropTypes.string,
+    btnCaption2: PropTypes.string,
+};
+ProductCard.defaultProps = {
+    singleBtn: false,
+    btn1Clicked: () => {
+    },
+    btn2Clicked: () => {
+    },
+    btnCaption1: '',
+    btnCaption2: '',
 };
 
 export default ProductCard;

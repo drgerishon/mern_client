@@ -1,0 +1,23 @@
+
+.agri-card .card-header {
+    background-color: #fff;
+}
+
+
+.agri-card .card-title {
+    padding: 0;
+
+}
+
+.agri-card .card-body {
+    padding-top: 0;
+    padding-bottom: 0;
+
+}
+
+
+.agri-card .card-header {
+    color: var(--color-black);
+
+}
+

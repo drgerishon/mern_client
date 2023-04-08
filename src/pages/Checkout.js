@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useSelector, useDispatch} from "react-redux";
-import {applyCoupon, emptyUserCart, getUserCart} from "../redux/services/user.service";
+import {applyCoupon, emptyUserCart, getUserCart} from "../services/user.service";
 
 import {toast} from "react-toastify";
 import {couponApplied} from "../redux/slices/coupon";

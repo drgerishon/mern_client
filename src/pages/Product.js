@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {getProduct, listRelated, productStar} from "../redux/services/product.service";
+import {getProduct, listRelated, productStar} from "../services/product.service";
 import {useNavigate, useParams} from "react-router-dom";
 import {toast} from "react-toastify";
 import SingleProduct from "../components/cards/SingleProduct";

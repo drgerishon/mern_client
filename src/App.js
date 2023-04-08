@@ -1,17 +1,20 @@
 import './App.css'
 import React, {lazy, Suspense} from 'react';
 import {Route, Routes} from "react-router-dom";
-import AuthLayout from "./hoc/AuthLayout";
-import {useSelector} from "react-redux";
-import AuthVerify from "./common/AuthVerify";
 import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
-import History from "./pages/user/History";
 
-import GeneralPageLayout from "./hoc/GeneralPageLayout";
-import Orders from "./pages/user/order/Orders";
-import Order from "./pages/user/order/Order";
+import UserCreate from "./pages/admin/userManagement/UserCreate";
 
+const AuthLayout = lazy(() => import("./hoc/AuthLayout"));
+const BuyerDashboard = lazy(() => import("./pages/user/Dashboard"));
+const GeneralPageLayout = lazy(() => import("./hoc/GeneralPageLayout"));
+const LoadedRoutes = lazy(() => import( "./pages/admin/route/RoutesPage"));
+const Orders = lazy(() => import( "./pages/user/order/Orders"));
+const Order = lazy(() => import( "./pages/user/order/Order"));
+const PermissionPage = lazy(() => import( "./pages/admin/role/PermissionPage"));
+const Roles = lazy(() => import( "./pages/admin/role/RolesPage"));
+const UserEdit = lazy(() => import( "./pages/admin/userManagement/UserEdit"));
+const UserManagement = lazy(() => import( "./pages/admin/userManagement"));
 const CategoryHome = lazy(() => import( "./pages/category/CategoryHome"));
 const SubHome = lazy(() => import( "./pages/sub/SubHome"));
 const Layout = lazy(() => import("./hoc/Layout"));
@@ -44,10 +47,8 @@ const CouponUpdate = lazy(() => import( "./pages/admin/coupon/CouponUpdate"));
 const Payment = lazy(() => import( "./pages/Payment"));
 const Success = lazy(() => import( "./pages/user/Success"));
 const Error = lazy(() => import( "./pages/user/Error"));
+const Permissions = lazy(() => import( "./pages/admin/permission/Permissions"));
 const App = () => {
-    const {user: currentUser, isLoggedIn} = useSelector((state) => state.auth);
-
-
     return (
         <Suspense fallback={
             <div className='text-center p-5'>
@@ -60,18 +61,16 @@ const App = () => {
             <Routes>
                 <Route path="/" element={<Layout/>}>
 
-                    <Route path="user/history" element={
+                    <Route path="user/dashboard" element={
                         <UserRoute>
-                            <History/>
+                            <BuyerDashboard/>
                         </UserRoute>
                     }/>
-
                     <Route path="user/product" element={
                         <UserRoute>
                             <UserProductCreate/>
                         </UserRoute>
                     }/>
-
                     <Route path="user/wishlist" element={
                         <UserRoute>
                             <WishList/>
@@ -93,6 +92,16 @@ const App = () => {
                             <AdminDashboard/>
                         </AdminRoute>
                     }/>
+
+                    <Route path="admin/user-management"
+                           element={
+                               <AdminRoute>
+                                   <UserManagement/>
+                               </AdminRoute>
+                           }
+                    />
+
+
                     <Route path="admin/category" element={
                         <AdminRoute>
                             <CategoryCreate/>
@@ -111,11 +120,12 @@ const App = () => {
                         <AdminRoute>
                             <SubCreate/>
                         </AdminRoute>
-                    }/> <Route path="admin/coupon" element={
-                    <AdminRoute>
-                        <CreateCouponPage/>
-                    </AdminRoute>
-                }/>
+                    }/>
+                    <Route path="admin/coupon" element={
+                        <AdminRoute>
+                            <CreateCouponPage/>
+                        </AdminRoute>
+                    }/>
                     <Route path="admin/sub/:slug" element={
                         <AdminRoute>
                             <SubUpdate/>
@@ -134,6 +144,43 @@ const App = () => {
                     <Route path="admin/product/:slug" element={
                         <AdminRoute>
                             <ProductUpdate/>
+                        </AdminRoute>
+                    }/>
+                    <Route path="admin/user-management/edit/:userId" element={
+                        <AdminRoute>
+                            <UserEdit/>
+                        </AdminRoute>
+                    }/>
+                    <Route path="admin/roles" element={
+                        <AdminRoute>
+                            <Roles/>
+                        </AdminRoute>
+                    }/>
+                    <Route path="admin/permissions" element={
+                        <AdminRoute>
+                            <Permissions/>
+                        </AdminRoute>
+                    }/>
+
+                    <Route path="/roles/:roleId/permissions"
+                           element={
+                               <AdminRoute>
+                                   <PermissionPage/>
+                               </AdminRoute>
+                           }
+
+                    />
+
+                    <Route path="user-management/create-user" element={
+                        <AdminRoute>
+                            <UserCreate/>
+                        </AdminRoute>
+                    }/>
+
+
+                    <Route path="admin/custom-routes" element={
+                        <AdminRoute>
+                            <LoadedRoutes/>
                         </AdminRoute>
                     }/>
 
@@ -197,7 +244,6 @@ const App = () => {
                 </Route>
 
             </Routes>
-            {currentUser !== null && <AuthVerify/>}
         </Suspense>
 
     );
@@ -205,18 +251,3 @@ const App = () => {
 
 export default App;
 
-// import React from 'react';
-// import Mega from "./components/nav/mega/Mega";
-//
-// const App = () => {
-//             return (
-//                 <>
-//                         <Mega/>
-//
-//
-//                 </>
-//             );
-//     }
-// ;
-//
-// export default App;

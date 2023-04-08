@@ -1,9 +1,9 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {createProduct} from "../../../redux/services/product.service";
+import {createProduct} from "../../../services/product.service";
 import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import ProductCreateForm from "../../../ui/forms/ProductCreateForm";
-import {getCategories, getCategorySubs} from "../../../redux/services/categories";
+import {getCategories, getCategorySubs} from "../../../services/categories";
 
 import FileUpload from "../../../ui/forms/FileUpload";
 

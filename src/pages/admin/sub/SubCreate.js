@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {createSub, getSubs, removeSub} from "../../../redux/services/sub.service";
+import {createSub, getSubs, removeSub} from "../../../services/sub.service";
 import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {Icon} from '@iconify/react';
 import {Link} from "react-router-dom";
 import CategoryForm from "../../../ui/forms/CategoryForm";
 import LocalSearch from "../../../ui/forms/LocalSearch";
-import {getCategories} from "../../../redux/services/categories";
+import {getCategories} from "../../../services/categories";
 import Auth from "../../../components/wrappers/Auth";
 import {errorHelper} from "../../../common/Utility";
 

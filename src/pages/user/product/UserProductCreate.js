@@ -2,11 +2,11 @@ import React, {useCallback, useEffect, useState} from 'react';
 import FileUpload from "../../../ui/forms/FileUpload";
 import Page1 from "../../../components/wizard/product/user/Page1";
 import Page2 from "../../../components/wizard/product/user/Page2";
-import {getCategories, getCategorySubs} from "../../../redux/services/categories";
+import {getCategories, getCategorySubs} from "../../../services/categories";
 import {MDBBtn, MDBSpinner} from "mdb-react-ui-kit";
 import Page3 from "../../../components/wizard/product/user/Page3";
 import Page4 from "../../../components/wizard/product/user/Page4";
-import {createProduct} from "../../../redux/services/product.service";
+import {createProduct} from "../../../services/product.service";
 import {toast} from "react-toastify";
 import {useSelector} from "react-redux";
 

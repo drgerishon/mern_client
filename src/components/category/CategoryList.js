@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
-import {getCategories} from '../../redux/services/categories';
+import {getCategories} from '../../services/categories';
 import ShopCategory from '../nav/mega/Mega';
 
 const CategoryList = () => {

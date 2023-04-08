@@ -46,12 +46,11 @@ const Aside = ({open, handleScroll, scrolled, general}) => {
         toggleClasses = [classes.Close, classes.CloseMobile]
     }
 
-
     return (
         <aside className={`${attachedClasses.join(' ')} ${toggleClasses.join(' ')}`}>
             <ul className={classes.SidebarList}>
                 {!excludedRoutes.includes(path) && currentUser && <>
-                    {currentUser.role === 'admin' && <AdminContent/>}
+                    {currentUser.role.code === 1000 && <AdminContent/>}
                 </>
                 }
             </ul>

@@ -5,7 +5,7 @@ import {Icon} from "@iconify/react";
 import defaultImage from "../../images/default.jpg";
 import Input from "../../ui/input/Input";
 import {checkValidity, updateObject} from "../../common/Utility";
-import {createStripeOrderForUser, emptyUserCart, initiateMPESAOderForUser} from "../../redux/services/user.service";
+import {createStripeOrderForUser, emptyUserCart, initiateMPESAOderForUser} from "../../services/user.service";
 import {clearMessage, setMessage} from "../../redux/slices/message";
 import {withSwal} from "react-sweetalert2";
 import {io} from 'socket.io-client';

@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect} from 'react';
 import Select from 'react-select'
-import {getCategories} from "../../redux/services/categories";
+import {getCategories} from "../../services/categories";
 
 const ProductCreateForm = ({
                                handleSubmit,

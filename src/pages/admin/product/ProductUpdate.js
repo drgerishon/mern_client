@@ -174,8 +174,8 @@ import {useNavigate, useParams} from "react-router-dom";
 import ProductUpdateForm from "../../../ui/forms/ProductUpdateForm";
 import FileUpload from "../../../ui/forms/FileUpload";
 import {toast} from "react-toastify";
-import {getProduct, updateProduct} from "../../../redux/services/product.service";
-import {getCategories, getCategorySubs} from "../../../redux/services/categories";
+import {getProduct, updateProduct} from "../../../services/product.service";
+import {getCategories, getCategorySubs} from "../../../services/categories";
 
 const initialState = {
     description: '',

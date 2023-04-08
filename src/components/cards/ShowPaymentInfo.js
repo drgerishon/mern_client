@@ -1,99 +1,86 @@
 import React from 'react';
-import './showShipmentInfo.css'
-import dayjs from "dayjs";
-import {Link} from "react-router-dom";
-import defaultImage from "../../images/default.jpg";
+import dayjs from 'dayjs';
+import { Link } from 'react-router-dom';
+import defaultImage from '../../images/default.jpg';
+import { Card, Col, Descriptions, Row, Typography, Button } from 'antd';
+const { Title } = Typography;
 
-const ShowPaymentInfo = ({order, showStatus = true}) => {
-
-
-
-    return (
-        <div className="container withRibbon mt-3 mt-md-5">
-            <div className="card" data-label={order.orderStatus}>
-
-                <div className="card__container">
-                    <div className="card-header">
-                        <h1 className='card-title p-0 m-0'><strong>Order {order.orderId}</strong></h1>
-                    </div>
-                    <div className="card-body">
-                        <div className="py-3">
-                            <div className="items">
-                                <div className=''>
-                                    <h6><strong>Payment Status</strong></h6>
-                                    <p className="text-body mb-0">{order.paymentStatus.toUpperCase()}</p>
-                                </div>
-                                <div className=''>
-                                    <h6><strong>Currency</strong></h6>
-                                    <p className="text-body mb-0">{order.currencyCode}</p>
-                                </div>
-                                <div className='flex-column'>
-                                    <h6><strong>Payment</strong></h6>
-                                    <p className="text-body mb-0">{order.paymentMethod.toUpperCase()}</p>
-                                </div>
-                                <div className='flex-column'>
-                                    <h6><strong> Date</strong></h6>
-                                    <p className="text-body mb-0">{}
-                                        {dayjs(order.orderDate).format('MMMM D, YYYY')}
-                                    </p>
-                                </div>
-                                <div className='flex-column'>
-                                    <h6><strong>Amount </strong></h6>
-                                    <span> {(order.amount).toLocaleString('en-US', {
-                                        style: 'currency', currency: `${order.currencyCode}`
-                                    })}
-                                           </span>
-                                </div>
-                                <div>
-                                    <Link
-                                        to={`/user/order/${order._id}`}
-                                        state={{order: order, from: '/user/history'}}
-                                        className="btn btn-primary w-100">View
-                                        Order
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="list-group-item p-3 bg-white">
-                            <div className="row no-gutters">
-
-                                <div className="row">
-                                    {order.products.map((p, i) => {
-                                        return <div className="col-lg-3 mt-4 mt-lg-0" key={i}>
-                                            <div className="member d-flex align-items-start" data-aos="zoom-in"
-                                                 data-aos-delay="200">
-                                                <div className="pic">
-                                                    <img
-                                                        src={defaultImage}
-                                                        className="img-fluid" alt=""/>
-                                                </div>
-                                                <div className="member-info">
-                                                    <h4>{p.product.title}</h4>
-                                                    <span><strong>Count</strong>: {p.count}</span>
-                                                    <span><strong>Price</strong>: {p.product.price}</span>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {order.shippingStatus === 'shipped' &&
-                    <div className="card-footer">
-                        <Link to={`/user/order/${order._id}`}
-                              className="btn btn-success ">
-                            Track Shipment</Link>
-                    </div>}
-                </div>
-
-
-            </div>
-        </div>
-
-    );
+const ShowPaymentInfo = ({ order, showStatus = true }) => {
+  return (
+    <Card
+      title={<Title level={4}>{`Order ${order.orderId}`}</Title>}
+      extra={showStatus && <span>{order.orderStatus}</span>}
+      className="mb-4"
+    >
+      <Descriptions>
+        <Descriptions.Item label="Payment Status">
+          {order.paymentStatus.toUpperCase()}
+        </Descriptions.Item>
+        <Descriptions.Item label="Currency">
+          {order.currencyCode}
+        </Descriptions.Item>
+        <Descriptions.Item label="Payment">
+          {order.paymentMethod.toUpperCase()}
+        </Descriptions.Item>
+        <Descriptions.Item label="Date">
+          {dayjs(order.orderDate).format('MMMM D, YYYY')}
+        </Descriptions.Item>
+        <Descriptions.Item label="Amount">
+          {order.amount.toLocaleString('en-US', {
+            style: 'currency',
+            currency: `${order.currencyCode}`,
+          })}
+        </Descriptions.Item>
+      </Descriptions>
+      <Row gutter={16}>
+        {order.products.map((item, index) => (
+          <Col key={index} md={12} lg={6} className="mb-4">
+            <Card
+              cover={
+                <img
+                  alt={item.product.title}
+                  src={defaultImage}
+                  className="w-100"
+                  style={{ height: '200px', objectFit: 'cover' }}
+                />
+              }
+            >
+              <Card.Meta
+                title={item.product.title}
+                description={
+                  <Row>
+                    <Col>
+                      <strong>Count: </strong>
+                      {item.count}
+                    </Col>
+                    <Col>
+                      <strong>Price: </strong>
+                      {item.product.price}
+                    </Col>
+                  </Row>
+                }
+              />
+            </Card>
+          </Col>
+        ))}
+      </Row>
+      <Row justify="end">
+        <Link
+          to={`/user/order/${order._id}`}
+          state={{ order: order, from: '/user/history' }}
+        >
+          <Button type="primary" className="mr-2">
+            View Order
+          </Button>
+        </Link>
+        {order.shippingStatus === 'shipped' && (
+          <Link to={`/user/order/${order._id}`}>
+            <Button type="success">Track Shipment</Button>
+          </Link>
+        )}
+      </Row>
+    </Card>
+  );
 };
 
 export default ShowPaymentInfo;

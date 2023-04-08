@@ -17,7 +17,11 @@ const AdminContent = () => {
             <SideLink href='/admin/category' icon='icon-park-outline:difference-set' title='Category'/>
             <SideLink href='/admin/sub' icon='icon-park-outline:add-subset' title='Sub category'/>
             <SideLink href='/admin/coupon' icon='icon-park-outline:coupon' title='Coupon'/>
-            <SideLink href='/account' icon='fluent-mdl2:account-management' title='Account'/>
+            <SideLink href='/admin/user-management' icon='fluent-mdl2:account-management' title='User Management'/>
+            <SideLink href='/admin/roles' icon='fluent-mdl2:account-management' title='Roles '/>
+            <SideLink href='/admin/permissions' icon='fluent-mdl2:account-management' title='Permissions '/>
+            <SideLink href='/admin/custom-routes' icon='fluent-mdl2:account-management' title='Routes '/>
+
         </>
     );
 };

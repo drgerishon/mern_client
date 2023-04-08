@@ -2,82 +2,27 @@ import React, {useEffect, useState} from 'react';
 import {clearMessage} from "../../redux/slices/message";
 import {useDispatch, useSelector} from "react-redux";
 import {Link, useLocation, Navigate, useNavigate} from "react-router-dom";
-import Input from "../../ui/input/Input";
 import {MDBBtn, MDBSpinner} from "mdb-react-ui-kit";
-import {checkValidity, updateObject} from "../../common/Utility";
 import {login} from "../../redux/slices/auth";
 import {withSwal} from "react-sweetalert2";
+import {loginFormInitialValues} from "../../common/initialValues/loginForm";
+import useForm from "../../hooks/useForm";
+import Form from "../../components/Form";
 
 const Login = ({swal}) => {
-
-
-    const initialValues = {
-        loginForm: {
-            email: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'email',
-                    name: 'email',
-                    required: true,
-                    label: 'Your Email'
-                },
-                value: '',
-                validation: {
-                    required: true,
-                }, validationMessage: [],
-                valid: false,
-                touched: false
-            },
-
-            password: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'password',
-                    required: true,
-                    name: 'password',
-                    label: 'Your password'
-                },
-                value: '',
-                validation: {
-                    required: true,
-                },
-                validationMessage: [],
-                valid: false,
-                touched: false
-            },
-            remember: {
-                elementType: 'checkbox',
-                elementConfig: {
-                    type: 'checkbox',
-                    name: 'remember',
-                    label: 'Remember me'
-                },
-                value: false,
-                validation: {
-                    required: false
-                },
-                validationMessage: [],
-                valid: true,
-                touched: true
-            },
-        },
-        formIsValid: false
-    }
-
-    const [values, setValues] = useState(initialValues);
-
     const [loading, setLoading] = useState(false);
-    const {message} = useSelector((state) => state.message);
     const {isLoggedIn, user} = useSelector((state) => state.auth);
     const location = useLocation();
     const [success, setSuccess] = useState(false)
     const [errored, setErrored] = useState(false)
     const [showForm, setShowForm] = useState(true)
 
+    const [formIsValid, setFormIsValid] = useState(false);
+    const [form, setForm] = useState(loginFormInitialValues.loginForm);
+    const handleChange = useForm(setForm, setFormIsValid);
 
     const dispatch = useDispatch();
     let navigate = useNavigate();
-
 
     useEffect(() => {
         dispatch(clearMessage());
@@ -89,8 +34,20 @@ const Login = ({swal}) => {
         if (intended) {
             return
         } else {
-            if (user && user.token) {
-                navigate("/user/history");
+            if (user && user.token && user.role && user.role.code) {
+                if (user.role.code === 1000) {
+                    navigate('/admin/dashboard');
+                } else if (user.role.code === 2000) {
+                    navigate('/user/dashboard');
+                } else if (user.role.code === 3000) {
+                    navigate('/farmer/dashboard');
+                } else if (user.role.code === 4000) {
+                    navigate('/carrier/dashboard');
+                } else if (user.role.code === 5000) {
+                    navigate('/institute/dashboard');
+                } else {
+                    navigate('/market');
+                }
             }
         }
 
@@ -98,169 +55,88 @@ const Login = ({swal}) => {
 
 
     const roleBasedRedirect = (res) => {
-
-
         swal.fire({
             text: 'Operation completed successfully',
             icon: 'success',
             didOpen: () => {
                 setSuccess(true)
             },
-            // didClose() {
-            //     window.location.reload();
-            // }
 
         }).then(result => {
             let intended = location.state
             if (intended) {
                 navigate(intended.from);
             } else {
-                if (res.user.role === 'admin') {
-                    navigate("/admin/dashboard");
+                if (user.role.code === 1000) {
+                    navigate('/admin/dashboard');
+                } else if (user.role.code === 2000) {
+                    navigate('/user/dashboard');
+                } else if (user.role.code === 3000) {
+                    navigate('/farmer/dashboard');
+                } else if (user.role.code === 4000) {
+                    navigate('/carrier/dashboard');
+                } else if (user.role.code === 5000) {
+                    navigate('/institute/dashboard');
                 } else {
-                    navigate("/user/history");
+                    navigate('/market');
                 }
             }
 
             dispatch(clearMessage())
         }).catch(error => {
             dispatch(clearMessage())
-
-
         });
-
-
     }
-    if (errored && message) {
-        swal.fire({
-            text: message,
-            icon: 'error',
-            didOpen: () => {
-                setShowForm(false)
-            },
-            didClose: () => {
-                setShowForm(true)
-                setErrored(false)
+
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        try {
+            setLoading(true);
+            setSuccess(false);
+            setErrored(false);
+            const formData = {};
+            for (let formElementIdentifier in form) {
+                formData[formElementIdentifier] = form[formElementIdentifier].value;
+
             }
-        }).then(result => {
-            dispatch(clearMessage())
 
-        }).catch(error => {
-            dispatch(clearMessage())
-            setSuccess(false)
-            setShowForm(false)
+            const res = await dispatch(login(formData)).unwrap();
+            if (res.error) {
+                await swal.fire({
+                    text: res.error,
+                    icon: "error",
+                });
+                setLoading(false);
+                setShowForm(true);
+            } else {
+                setErrored(false);
+                roleBasedRedirect(res.user);
+            }
+        } catch (error) {
+            console.error(error);
+            setErrored(true);
+            setSuccess(false);
+        } finally {
             setLoading(false);
-
-        });
-    }
-
-    const handleSubmit = (event) => {
-        event.preventDefault()
-        setLoading(true)
-        setSuccess(false)
-        setErrored(false)
-        const formData = {};
-        for (let formElementIdentifier in values.loginForm) {
-            formData[formElementIdentifier] = values.loginForm[formElementIdentifier].value;
         }
-
-        dispatch(login(formData))
-            .unwrap()
-            .then((res) => {
-                setLoading(false)
-                setErrored(false)
-                roleBasedRedirect(res.user)
-
-            })
-            .catch((e) => {
-                console.log(e)
-
-                setErrored(true)
-                setSuccess(false)
-                setLoading(false)
-            });
-
-
-    }
-
-
-    function handleChange(event, inputIdentifier) {
-
-        let value = event.target.value
-        if (inputIdentifier === 'remember') {
-            value = event.target.checked
-        }
-
-        const updatedFormElement = updateObject(values.loginForm[inputIdentifier], {
-            value,
-            valid: checkValidity(value, values.loginForm[inputIdentifier], values.loginForm.password.value),
-            touched: true
-        });
-
-        const updatedLoginForm = updateObject(values.loginForm, {
-            [inputIdentifier]: updatedFormElement
-        });
-
-        let formIsValid = true;
-
-        for (let inputIdentifier in updatedLoginForm) {
-            formIsValid = updatedLoginForm[inputIdentifier].valid && formIsValid;
-        }
-
-
-        setValues({loginForm: updatedLoginForm, formIsValid: formIsValid});
-
-    }
-
-
-    const formElementsArray = [];
-
-    for (let key in values.loginForm) {
-        formElementsArray.push({
-            id: key,
-            config: values.loginForm[key]
-        });
-    }
+    };
 
 
     const signupForm = () => {
         return (
 
             <form className='row g-3' onSubmit={handleSubmit}>
-
-                <>
-                    {
-
-                        formElementsArray.map(({config, id}) => {
-                            let feedback = ''
-                            Array.isArray(message) && message && message.map(m => {
-                                if (m.param === id) return feedback = m.msg
-                                return feedback = ''
-                            })
-
-                            return <Input
-                                key={id}
-                                id={id}
-                                feedback={feedback}
-                                className='col-12 '
-                                elementType={config.elementType}
-                                elementConfig={config.elementConfig}
-                                value={config.value}
-                                message={config.validationMessage}
-                                invalid={!config.valid}
-                                shouldValidate={config.validation}
-                                touched={config.touched}
-                                changed={(event) => handleChange(event, id)}/>
-
-                        })
-                    }
-
-
+                <Form
+                    form={form}
+                    handleChange={handleChange}
+                >
                     <div className='col-12'>
                         <MDBBtn
                             type='submit'
                             className='btn btn-primary  w-100'
-                            disabled={loading || !values.formIsValid}>
+                            disabled={loading || !formIsValid}>
                             {loading ? <>
                                 <MDBSpinner size='sm' role='status' tag='span' className='me-2'/>
                                 Loading...
@@ -278,27 +154,8 @@ const Login = ({swal}) => {
                         </p>
                     </div>
 
-                </>
+                </Form>
 
-                {
-                    message && Array.isArray(message) ? message.map(m => {
-                        return <div className="col-12 " key={m.param}>
-                            <div
-                                className={"text-danger "}
-                                role="alert"
-                            >
-                                {m.msg}
-                            </div>
-                        </div>
-                    }) : <div className="col-12 ">
-                        <div
-                            className={"text-danger "}
-                            role="alert"
-                        >
-                            {message}
-                        </div>
-                    </div>
-                }
             </form>
 
         );

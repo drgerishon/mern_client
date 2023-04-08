@@ -1,6 +1,6 @@
 import React, {Suspense, useEffect, useState} from 'react';
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {getCoupon, editCoupon, createCoupon} from "../../../redux/services/coupon.service";
+import {getCoupon, editCoupon, createCoupon} from "../../../services/coupon.service";
 import {useDispatch, useSelector} from "react-redux";
 
 import Auth from "../../../components/wrappers/Auth";

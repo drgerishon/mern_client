@@ -1,13 +1,13 @@
 import {useSelector, useDispatch} from "react-redux";
 import ProductCard from "../components/cards/ProductCard";
 import React, {useEffect, useState} from "react";
-import {fetchProductsByFilter, getProductsByCount, minMax} from "../redux/services/product.service";
+import {fetchProductsByFilter, getProductsByCount, minMax} from "../services/product.service";
 import General from "../components/wrappers/General";
 import Slider from "../components/range/Slider";
 import {setText} from "../redux/slices/search";
 import Accordion2 from "../components/accordion/Accordion";
-import {getCategories} from "../redux/services/categories";
-import {getSubs} from "../redux/services/sub.service";
+import {getCategories} from "../services/categories";
+import {getSubs} from "../services/sub.service";
 import {MDBCheckbox} from "mdb-react-ui-kit";
 import Star from "../components/star/Star";
 

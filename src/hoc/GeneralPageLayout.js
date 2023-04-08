@@ -30,9 +30,9 @@ const GeneralPageLayout = () => {
             <Header clicked={toggleClosed} scrolled={scrolled} handleScroll={handleScroll}/>
             <Aside open={open} scrolled={scrolled} handleScroll={handleScroll} general={true}/>
             <main className={attachedClasses.join(' ')}>
-                <section>
-                    <Outlet context={{open}}/>
-                </section>
+
+                <Outlet context={{open}}/>
+
             </main>
             <Footer/>
         </>

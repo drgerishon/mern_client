@@ -3,8 +3,8 @@ import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
 import CategoryForm from "../../../ui/forms/CategoryForm";
-import {getSub, updateSub} from "../../../redux/services/sub.service";
-import {getCategories} from "../../../redux/services/categories";
+import {getSub, updateSub} from "../../../services/sub.service";
+import {getCategories} from "../../../services/categories";
 import Auth from "../../../components/wrappers/Auth";
 
 

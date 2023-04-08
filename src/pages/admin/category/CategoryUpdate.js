@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {getCategory, updateCategory} from "../../../redux/services/categories";
+import {getCategory, updateCategory} from "../../../services/categories";
 import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {useNavigate, useParams} from "react-router-dom";
@@ -36,7 +36,6 @@ const CategoryUpdate = () => {
                 setName('')
                 toast.success(`${r.data.name} is updated`)
                 navigate("/admin/category");
-
 
             })
             .catch((e) => {

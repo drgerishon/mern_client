@@ -4,22 +4,20 @@ import NewArrivals from "../components/home/NewArrivals";
 import BestSellers from "../components/home/BestSellers";
 import CategoryList from "../components/category/CategoryList";
 import SubsList from "../components/subs/SubsList";
+import Hero from "../components/home/Hero";
 
 const Home = () => {
     return (
         <>
-            <Jumbotron text={['New arrivals', "Quality Products", 'Discounted Prices', "24/7 Support"]}/>
 
+            <Hero/>
             <NewArrivals/>
+            <BestSellers/>
+
+            {/*<CategoryList/>*/}
 
 
-            {/*<BestSellers/>*/}
-
-
-            <CategoryList/>
-
-
-            <SubsList/>
+            {/*<SubsList/>*/}
         </>
     );
 };

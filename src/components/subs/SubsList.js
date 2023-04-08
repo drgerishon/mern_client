@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {getSubs} from '../../redux/services/sub.service';
+import {getSubs} from '../../services/sub.service';
 
 const SubsList = () => {
     const [subs, setSubs] = useState([]);

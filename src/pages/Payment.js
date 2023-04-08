@@ -8,7 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import Paypal from "../components/payment/Paypal";
 import Mpesa from "../components/payment/Mpesa";
 import {PayPalScriptProvider} from "@paypal/react-paypal-js";
-import {createPaymentIntent} from "../redux/services/payment.service";
+import {createPaymentIntent} from "../services/payment.service";
 import {setTotalAfterDiscount} from "../redux/slices/totalAfterDiscount";
 import {clearMessage} from "../redux/slices/message";
 

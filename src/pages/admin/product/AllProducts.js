@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import ProductCard from "../../../components/cards/ProductCard";
 import {useSelector} from "react-redux";
-import {getProductsByCount, removeProduct} from "../../../redux/services/product.service";
+import {getProductsByCount, removeProduct} from "../../../services/product.service";
 import {withSwal} from "react-sweetalert2";
 import {useNavigate} from "react-router-dom";
 

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useStripe, CardElement, useElements} from "@stripe/react-stripe-js";
 import {useSelector, useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {createStripeOrderForUser, emptyUserCart} from "../../redux/services/user.service";
+import {createStripeOrderForUser, emptyUserCart} from "../../services/user.service";
 import {addToCart} from "../../redux/slices/cart";
 import {couponApplied} from "../../redux/slices/coupon";
 import {selectPaymentMethod} from "../../redux/slices/paymentMethods";

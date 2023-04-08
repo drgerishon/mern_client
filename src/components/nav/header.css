@@ -3,6 +3,8 @@
 --------------------------------------------------------------*/
 .logo {
     line-height: 1;
+    margin-right: 15px;
+
 }
 
 @media (min-width: 1200px) {
@@ -23,19 +25,18 @@
     font-family: var(--font-primary);
 }
 
-
 .header {
     height: 60px;
     background-color: #fff;
     transition: all 0.3s;
     z-index: 997;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding-left: 20px;
     box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
-
-
-    /* Toggle Sidebar Button */
-    /* Search Bar */
 }
+
 
 .header .toggle-sidebar-btn {
     font-size: 32px;
@@ -44,9 +45,15 @@
     color: #012970;
 }
 
+.header .d-flex.align-items-center {
+    flex-wrap: wrap;
+}
+
 .header .search-bar {
+    margin-right: 15px;
     min-width: 360px;
     padding: 0 20px;
+    flex-grow: 1;
 }
 
 @media (max-width: 1199px) {
@@ -155,70 +162,45 @@
 
 }
 
-.header-nav .notifications {
-    inset: 8px -15px auto auto !important;
+.header-nav .nav-item {
+    margin-right: 20px;
+}
+.header-nav .nav-item:hover {
+    cursor: pointer;
+    opacity: 0.8;
 }
 
-.header-nav .notifications .notification-item {
-    display: flex;
-    align-items: center;
-    padding: 15px 10px;
-    transition: 0.3s;
+/* This will remove the margin from the last nav item */
+.header-nav .nav-item:last-child {
+    margin-right: 0;
 }
 
-.header-nav .notifications .notification-item i {
-    margin: 0 20px 0 10px;
-    font-size: 24px;
+/* Add this media query to your existing CSS file */
+
+@media (min-width: 1199px) and (max-width: 1399px) {
+    .header .search-bar {
+        min-width: 250px; /* Reduce the minimum width */
+    }
 }
 
-.header-nav .notifications .notification-item h4 {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 5px;
+/* Add this media query to your existing CSS file */
+
+
+@media (max-width: 452px) {
+    .header .nav-item {
+        margin-right: 8px; /* Reduce the margin between nav items */
+    }
+
+    .header .nav-item:last-child {
+        margin-right: 0;
+    }
+
+    .header .search-bar {
+        display: none; /* Hide the search bar */
+    }
+
+    .header .toggle-sidebar-btn {
+        padding-left: 5px; /* Reduce the padding for the sidebar button */
+    }
 }
-
-.header-nav .notifications .notification-item p {
-    font-size: 13px;
-    margin-bottom: 3px;
-    color: #919191;
-}
-
-.header-nav .notifications .notification-item:hover {
-    background-color: #f6f9ff;
-}
-
-/*.header-nav .messages {*/
-/*    inset: 8px -15px auto auto !important;*/
-/*}*/
-
-/*.header-nav .messages .message-item {*/
-/*    padding: 15px 10px;*/
-/*    transition: 0.3s;*/
-/*}*/
-
-/*.header-nav .messages .message-item a {*/
-/*    display: flex;*/
-/*}*/
-
-/*.header-nav .messages .message-item img {*/
-/*    margin: 0 20px 0 10px;*/
-/*    max-height: 40px;*/
-/*}*/
-
-/*.header-nav .messages .message-item h4 {*/
-/*    font-size: 16px;*/
-/*    font-weight: 600;*/
-/*    margin-bottom: 5px;*/
-/*    color: #444444;*/
-/*}*/
-
-/*.header-nav .messages .message-item p {*/
-/*    font-size: 13px;*/
-/*    margin-bottom: 3px;*/
-/*    color: #919191;*/
-/*}*/
-
-/*.header-nav .messages .message-item:hover {*/
-/*    background-color: #f6f9ff;*/
-/*}*/
 

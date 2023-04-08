@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
 import ProductCard from "../../components/cards/ProductCard";
-import {getSub} from "../../redux/services/sub.service";
+import {getSub} from "../../services/sub.service";
 
 
 const SubHome = () => {

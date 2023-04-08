@@ -13,7 +13,7 @@ import _ from "lodash";
 import {addToCart} from "../../redux/slices/cart";
 import Tooltip from "../Tooltip/Tooltip";
 import {setVisible} from "../../redux/slices/drawer";
-import {addToWishlist} from '../../redux/services/user.service'
+import {addToWishlist} from '../../services/user.service'
 import {toast} from "react-toastify";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';

@@ -1,0 +1,7 @@
+.calendar-icon {
+  cursor: pointer;
+}
+
+input[type='date'] {
+  cursor: text;
+}

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {getCategory} from "../../redux/services/categories";
+import {getCategory} from "../../services/categories";
 import {useParams} from "react-router-dom";
 import ProductCard from "../../components/cards/ProductCard";
 

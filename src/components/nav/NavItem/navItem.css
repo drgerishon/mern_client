@@ -1,0 +1,13 @@
+/* src/header/navItem/navItem.css */
+.nav-icon-badge {
+    position: relative;
+}
+
+.header-nav .badge-number {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    font-weight: normal;
+    font-size: 10px;
+    padding: 2px 4px;
+}

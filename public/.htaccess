@@ -1,0 +1,10 @@
+AddEncoding gzip .gz
+
+<IfModule mod_deflate.c>
+  <FilesMatch "\.(js|css)$">
+    AddType application/x-javascript .js
+    AddType text/css .css
+    AddEncoding gzip .js.gz .css.gz
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+</IfModule>

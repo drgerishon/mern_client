@@ -6,7 +6,7 @@ import {addToCart} from "../../redux/slices/cart";
 import {toast} from "react-toastify";
 import {Icon} from '@iconify/react';
 import './ProductcardInCheckout.css'
-import {emptyUserCart} from "../../redux/services/user.service";
+import {emptyUserCart} from "../../services/user.service";
 import {useNavigate} from "react-router-dom";
 import {setTotalAfterDiscount} from "../../redux/slices/totalAfterDiscount";
 import {couponApplied} from "../../redux/slices/coupon";

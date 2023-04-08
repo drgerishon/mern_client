@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {Link} from "react-router-dom";
-import {getWishList, removeWishList} from "../../redux/services/user.service";
+import {getWishList, removeWishList} from "../../services/user.service";
 import {Icon} from '@iconify/react';
 
 const WishList = () => {

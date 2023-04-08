@@ -1,6 +1,6 @@
 // import AdminNav from "../../../components/nav/AdminNav";
 import React, {useEffect, useState} from "react";
-import {createCategory, getCategories, removeCategory} from "../../../redux/services/categories";
+import {createCategory, getCategories, removeCategory} from "../../../services/categories";
 import {useSelector} from "react-redux";
 import {toast} from "react-toastify";
 import {Icon} from '@iconify/react';

@@ -7,7 +7,7 @@ import {
     capturePaypalPaymentAndSavePaypalOrder,
     emptyUserCart,
     initPaypalOrder
-} from "../../redux/services/user.service";
+} from "../../services/user.service";
 import PayCard from "./Card";
 import {withSwal} from "react-sweetalert2";
 import {clearMessage} from "../../redux/slices/message";
